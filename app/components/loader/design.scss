@@ -1,0 +1,60 @@
+[component=Loader] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+
+  .loader {
+    display: none;
+    opacity: 0;
+    border: 2em solid #f3f3f3; /* Light grey */
+    border-top: 2em solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 6em;
+    height: 6em;
+    animation: spin 2s linear infinite;
+    transition: opacity .2s ease;
+  }
+
+  .content {
+    display: block;
+    opacity: 1;
+    width: 100%;
+    height: 100%;
+    transition: opacity .2s ease;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  &[anim="loading"] {
+    .loader {
+      display: block;
+      opacity: 1;
+    }
+    .content {
+      display: none;
+    }
+  }
+  &[anim="loaded-step2"] {
+    .loader {
+      display: block;
+      opacity: 0;
+    }
+    .content {
+      display: none;
+    }
+  }
+  &[anim="loaded-step3"] {
+    .loader {
+      display: none;
+    }
+    .content {
+      display: block;
+      opacity: 0;
+    }
+  }
+}

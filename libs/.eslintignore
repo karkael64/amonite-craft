@@ -1,0 +1,6 @@
+**/*{.,-}min.js
+**/*{.,-}min.js
+/node_modules
+.docker/
+.circleci/
+.vscode/

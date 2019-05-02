@@ -1,0 +1,50 @@
+input {
+  padding: .7em 1em;
+  border-radius: .3em;
+  width: 100%;
+  -webkit-appearance: none;
+  border: 1px solid rgba(200,200,200,0.5);
+}
+
+input, textarea, select {
+  font: 400 1rem sans-serif;
+  user-select: none;
+}
+
+[component=Input] {
+  position: relative;
+  display: inline-block;
+  width: 15rem;
+
+  .hover-icons {
+    font-size: 1em;
+    user-select: none;
+    position: absolute;
+    right: .6em;
+    top: calc(50% - .7em);
+
+    > * {
+      display: none;
+      width: 1.2em;
+      height: 1.2em;
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(127,127,127,.2);
+      }
+
+      &.show {
+        display: inline-block;
+      }
+    }
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+
+    &[type=text] {
+      padding-right: 2em;
+    }
+  }
+}

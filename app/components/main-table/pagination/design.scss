@@ -1,0 +1,64 @@
+[component=Pagination] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em 0;
+
+  .current {
+    margin: 0 1em;
+  }
+
+  .first,
+  .prev,
+  .next,
+  .last {
+    user-select: none;
+    cursor: pointer;
+    width: 2em;
+    margin: .25em;
+
+    > i {
+      display: inline-block;
+    }
+
+    border-radius: .25em;
+    &:hover {
+      background: #eee;
+    }
+
+    &[disabled],
+    &[disabled]:hover {
+      cursor: default;
+      background: #ddd;
+      color: #888;
+    }
+  }
+
+  .first,
+  .last {
+    > i {
+      width: .25em;
+      &:before {
+        margin-left: -.33em;
+      }
+    }
+  }
+
+  .prev,
+  .next {
+    > i {
+      width: .5em;
+      &:before {
+        margin-left: -.25em;
+      }
+    }
+  }
+
+  button {
+    border: none;
+    background: none;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+}

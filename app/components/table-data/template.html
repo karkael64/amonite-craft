@@ -1,0 +1,19 @@
+<table>
+  <thead>
+    <tr>
+      ${options.columns.map((columnName) => {
+        const header = options.headers[columnName];
+        return header ? `<th>${header.label}</th>\n`:"";
+      }).join("")}
+    </tr>
+  </thead>
+  <tbody>
+    ${options.rows.map((row) => {
+      return '<tr>\n' + options.columns.map((columnName) => {
+        const cell = row[columnName];
+        if (cell === undefined) cell = "";
+        return `<td>${cell}</td>\n`;
+      }).join("") + '</tr>\n';
+    }).join("")}
+  </tbody>
+</table>

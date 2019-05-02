@@ -1,0 +1,43 @@
+{
+  "extends": "standard",
+  "rules": {
+    "brace-style": 0,
+    "consistent-return": 0,
+    "curly": 0,
+    "global-require": 1,
+    "import/no-dynamic-require": 1,
+    "import/prefer-default-export": 0,
+    "multiline-ternary": 0,
+    "new-parens": 0,
+    "no-console": 1,
+    "no-cond-assign": 0,
+    "no-shadow": 1,
+    "no-undef": 1,
+    "no-unused-expressions": 1,
+    "one-var": 0,
+    "padded-blocks": 0,
+    "prefer-destructuring": 1,
+    "prefer-promise-reject-errors": 0,
+    "prefer-rest-params": 0,
+    "semi": 0,
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 2,
+        "maxBOF": 1,
+        "maxEOF": 1
+      }
+    ],
+    "quotes": [
+      "warn",
+      "double",
+      {
+        "allowTemplateLiterals": true
+      }
+    ]
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  }
+}

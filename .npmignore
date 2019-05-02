@@ -1,0 +1,11 @@
+/.git
+/.gitignore
+/gulpfile.js
+/package-lock.json
+/app
+/build
+/config
+/gulp
+/i18n
+/node_modules
+/stub

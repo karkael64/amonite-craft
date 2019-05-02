@@ -1,0 +1,29 @@
+msgid "general:welcome"
+msgstr "Bienvenue, ${options.username} !"
+
+msgid "component:main-table:pagination:stats:phrase"
+msgstr "Page ${options.page}/${options.lastPage} (${options.total} élements)"
+
+msgid "page:stats:table:user:headers:lastName"
+msgstr "Nom"
+
+msgid "page:stats:table:user:headers:firstName"
+msgstr "Prénom"
+
+msgid "page:stats:table:user:headers:civility"
+msgstr "Titre"
+
+msgid "civility:mr"
+msgstr "Monsieur"
+
+msgid "civility:mrs"
+msgstr "Madame"
+
+msgid "civility:short:m"
+msgstr "M"
+
+msgid "civility:short:mrs"
+msgstr "Mme"
+
+msgid "page:forum:create:popin:title"
+msgstr "Confirmer la création"

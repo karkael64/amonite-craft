@@ -1,0 +1,39 @@
+[component=TableData] {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #111;
+
+    thead {
+      background: #ddd;
+      color: #003;
+    }
+    tbody tr {
+      &:nth-child(even) {
+        background: #f8f8f8;
+      }
+      &:nth-child(odd) {
+        background: #f0f0f0;
+      }
+    }
+    th, td {
+      padding: .8em 1.6em;
+    }
+    thead tr th {
+      &:first-child {
+        border-top-left-radius: .4em;
+      }
+      &:last-child {
+        border-top-right-radius: .4em;
+      }
+    }
+    tbody tr:last-child td {
+      &:first-child {
+        border-bottom-left-radius: .4em;
+      }
+      &:last-child {
+        border-bottom-right-radius: .4em;
+      }
+    }
+  }
+}

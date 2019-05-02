@@ -1,0 +1,12 @@
+<h2>${options.title}</h2>
+<div class="actions">
+  <div class="create-button"></div>
+</div>
+<div class="forum-list">
+  ${options.list.map((subject) => {
+    return `<div class="forum-subject" data-id="${subject.id}">
+      <h3>${subject.title}</h3>
+      <p>${subject.count}</p>
+    </div>`
+  }).join('')}
+</div>

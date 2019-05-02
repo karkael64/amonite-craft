@@ -1,0 +1,36 @@
+{
+  "total": 78,
+  "users": [
+    {
+      "id" : "9e1bc108-ee38-42b5-be02-f6f267bf98de",
+      "href" : "/v1/users/9e1bc108-ee38-42b5-be02-f6f267bf98de",
+      "lastName" : "Marc",
+      "firstName" : "Marc",
+      "civility" : "mr"
+    }, {
+      "id" : "9e1bc108-ee38-42b5-be02-f6f267bf98df",
+      "href" : "/v1/users/9e1bc108-ee38-42b5-be02-f6f267bf98df",
+      "lastName": "Minissian",
+      "firstName": "Frank",
+      "civility": "mr"
+    }, {
+      "id" : "9e1bc108-ee38-42b5-be02-f6f267bf98e0",
+      "href" : "/v1/users/9e1bc108-ee38-42b5-be02-f6f267bf98e0",
+      "lastName": "Boumendil",
+      "firstName": "Laurent",
+      "civility": "mrs"
+    }, {
+      "id" : "9e1bc108-ee38-42b5-be02-f6f267bf98e1",
+      "href" : "/v1/users/9e1bc108-ee38-42b5-be02-f6f267bf98e1",
+      "lastName": "Eterstein",
+      "firstName": "Pierre",
+      "civility": "mrs"
+    }, {
+      "id" : "9e1bc108-ee38-42b5-be02-f6f267bf98e1",
+      "href" : "/v1/users/9e1bc108-ee38-42b5-be02-f6f267bf98e1",
+      "lastName": "Baranes",
+      "firstName": "Serge",
+      "civility": "mrs"
+    }
+  ]
+}

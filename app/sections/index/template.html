@@ -1,0 +1,16 @@
+<section>
+  <h1>Hello World!</h1>
+  <ul>
+    ${options.list.map((item) => {
+      return `<li>${item.name} (${item.count})</li>`;
+    }).join("")}
+  </ul>
+  <form>
+    <div class="input-name"></div>
+    <div class="input-count"></div>
+    <div class="button-add"></div>
+  </form>
+  <pre><ul>${options.routes.map((route) => {
+      return `<li><a href="#${route}">${route}</a></li>`;
+    }).join("")}</ul><pre>
+</section>

@@ -1,0 +1,11 @@
+[component=ForumList]{
+  .forum-subject {
+    cursor: pointer;
+    margin: .2em .5em;
+    padding: .2em .5em;
+
+    &:hover {
+      background: grey;
+    }
+  }
+}
