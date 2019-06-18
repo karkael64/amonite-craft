@@ -96,8 +96,10 @@ export default class Router {
    */
 
   static listenPopstate () {
-    popstate()
     window.addEventListener("popstate", popstate)
+    if (!launched) {
+      popstate()
+    }
   }
 
 
