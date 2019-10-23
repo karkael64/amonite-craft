@@ -8,7 +8,7 @@ function merge (...args) {
     if (typeof builder.success === "function") success.push(builder.success)
     if (Array.isArray(builder.failure)) failure.concat(builder.failure)
     if (typeof builder.failure === "function") failure.push(builder.failure)
-    Object.assign(builder)
+    Object.assign(result, builder)
   }
   result.success = success
   result.failure = failure
