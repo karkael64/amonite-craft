@@ -1,7 +1,7 @@
 const { dest, src } = require('gulp');
 const { map } = require('./gulp-utils');
 const concat = require('gulp-concat');
-const config = require('../config/document.config.json');
+const config = require('../test/config/document.config.json');
 
 function compile(options) {
   if (!(typeof options === 'object')) options = {};
@@ -13,7 +13,7 @@ function compile(options) {
 }
 
 function document() {
-  return src('./config/document.template.html')
+  return src('./test/config/document.template.html')
     .pipe(compile(config))
     .pipe(concat('index.html'))
     .pipe(dest('./build/'));

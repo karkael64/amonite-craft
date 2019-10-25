@@ -5,18 +5,23 @@ const sourcemaps = require('gulp-sourcemaps');
 const concat = require('gulp-concat');
 const connect = require('gulp-connect');
 
+const path = require('path');
+const documentConfig = require('../test/config/document.config.json');
+const file = path.basename(documentConfig.design);
+const dir = path.resolve('./build', path.dirname(file));
+
 function sass() {
-  return src('./app/**/*.scss')
+  return src('./test/app/**/*.scss')
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(gulpSass.sync().on('error', gulpSass.logError))
-    .pipe(concat('design.css'))
+    .pipe(concat(file))
     .pipe(sourcemaps.write())
-    .pipe(dest('./build/'))
+    .pipe(dest(dir))
     .pipe(connect.reload());
 }
 
 function reloadSass(then) {
-  watch('./app/**/*.scss', sass);
+  watch('./test/app/**/*.scss', sass);
   then();
 }
 

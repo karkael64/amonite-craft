@@ -5,12 +5,12 @@ const gulpIconfont = require('gulp-iconfont');
 const fontName = 'icons';
 
 function icons() {
-  return src(['./app/**/*.svg'])
+  return src(['./test/app/**/*.svg'])
     .pipe(iconfontCss({
       fontName: fontName,
       fontPath: './fonts/',
-      path: './config/icons.tpl-scss',
-      targetPath: '../../app/icons/icons.scss'
+      path: './test/config/icons.tpl-scss',
+      targetPath: '../../test/app/icons/icons.scss'
     }))
     .pipe(gulpIconfont({
       fontName: fontName,
@@ -24,7 +24,7 @@ function icons() {
 }
 
 function reloadIcons(then) {
-  watch('./app/**/*.svg', icons);
+  watch('./test/app/**/*.svg', icons);
   then();
 }
 

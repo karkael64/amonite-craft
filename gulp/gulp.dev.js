@@ -8,13 +8,13 @@ const { html } = require('./document');
 
 
 const Express = require('express');
-const expressRoute = require('../stub/api');
+const expressRoute = require('../test/stub/api');
 
 const { babel, reloadBabel } = require('./babel');
 const scss = series(icons, sass);
 
 function pictures() {
-  return src(['./app/**/*.png', './app/**/*.jpg', './app/**/*.jpeg'])
+  return src(['./test/app/**/*.png', './test/app/**/*.jpg', './test/app/**/*.jpeg'])
     .pipe(dest('./build/pictures/'));
 }
 
@@ -37,10 +37,12 @@ function local(then) {
 const build = parallel(pictures, scss, babel, html);
 const server = parallel(stub, local);
 const reload = parallel(reloadIcons, reloadBabel, reloadSass);
+const dev = series(build, server, reload);
 
 exports.build = build;
 exports.server = server;
 exports.reload = reload;
-exports.dev = series(build, server, reload);
+exports.dev = dev;
 exports.babel = babel;
 exports.icons = icons;
+exports.sass = sass;

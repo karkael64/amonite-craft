@@ -6,8 +6,8 @@ const babelify = require('./babelify');
 const {dest} = require('gulp');
 
 function prod() {
-  return browserify('./config/windowed.js', {debug: true})
-    .transform(babelify, {presets: ['@babel/env', 'minify'], sourceMaps: true, extensions: ['.js', '.json', '.html', '.po']})
+  return browserify('./gulp/windowed.js', {debug: true})
+    .transform(babelify, {presets: ['@babel/env', 'minify'], sourceMaps: true, extensions: ['.js', '.json', '.html', '.po'], comments: false})
     .bundle()
     .pipe(source('esm.js'))
     .pipe(buffer())
