@@ -1,33 +1,46 @@
-const { dest, watch } = require('gulp');
+const { watch } = require('gulp')
+const fs = require('fs')
+const browserify = require('browserify')
+const connect = require('gulp-connect')
+const babelify = require('./babelify')
 
-const source = require('vinyl-source-stream');
-const buffer = require('vinyl-buffer');
-const browserify = require('browserify');
-const sourcemaps = require('gulp-sourcemaps');
-const connect = require('gulp-connect');
-const babelify = require('./babelify');
+const path = require('path')
+const documentConfig = require('../test/config/document.config.json')
+const file = path.resolve('./build', documentConfig.run)
 
-const path = require('path');
-const documentConfig = require('../test/config/document.config.json');
-const file = path.basename(documentConfig.run);
-const dir = path.resolve('./build', path.dirname(file));
+const { map } = require('./gulp-utils')
 
 function babel() {
+  var first = true
+  var count = 0
+  function then (next) {
+    return function (err, res) {
+      if (err) next(err)
+      else if (count === 0) fs.readFile(file, next)
+      else next()
+    }
+  }
+
   return browserify('./test/app/main/index.js', { debug: true })
     .transform(babelify, { presets: ['@babel/env'], sourceMaps: true, extensions: ['.js', '.json', '.html', '.po'] })
     .bundle()
-    .pipe(source(file))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(sourcemaps.write())
-    .pipe(dest(dir))
-    .pipe(connect.reload());
+    .pipe(map(function (buffer, cb) {
+      count++
+      cb(null, buffer)
+    }))
+    .pipe(map(function (buffer, cb) {
+      count--
+      if (first) fs.writeFile(file, buffer, then(cb))
+      else fs.appendFile(file, buffer, then(cb))
+      first = false
+    }))
+    .pipe(connect.reload())
 }
 
 function reloadBabel(then) {
-  watch(['./libs/**/*.js', './test/app/**/*.js', './test/app/**/*.json', './test/app/**/*.html', './i18n/*.po'], babel);
-  then();
+  watch(['./libs/**/*.js', './test/app/**/*.js', './test/app/**/*.json', './test/app/**/*.html', './test/i18n/*.po'], babel)
+  then()
 }
 
-exports.babel = babel;
-exports.reloadBabel = reloadBabel;
+exports.babel = babel
+exports.reloadBabel = reloadBabel

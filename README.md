@@ -1,5 +1,6 @@
 # Amonite-Craft
 
+
 Amonite is a Web Front JavaScript library that let's you improving your
 Craftmanship skills. It means _you don't have to use a framework which limit
 developer skills_, you just have to call the tool you need when you want: show
@@ -9,29 +10,34 @@ endpoint with back-end API.
 The website goal is reaching by you, the developer: welcome to the Craftmanship
 world!
 
-## Simple use
+## Table of Contents
 
-``` js
-import Amonite from "amonite" // or
-const Amonite = require("amonite") // please note library files uses "import" keyword
-```
+1. Installation
+  1. Install in your browser as a library
+  2. Import sources
+  3. Browserify with Gulp
+2. Amonite-Craft contents
+3. Simple usage
+4. Documentation
 
-Callback `cb` is called in code `init(cb)` when window is loaded, or the
-callback is called in code `initAll(cb)` when Page container is set by default
-on `document.body` and the Router start listening registered routes.
+## Installation
+### Install in your browser as a library
 
-``` js
-Amonite.initAll() // or
-Amonite.init(() => {
-  Amonite.Page.setContainer(document.body)
-  Amonite.Router.listenPopstate()
-})
-```
+You can load files directly in your window by adding this file in your script: `/esm.js`. Then you can use it like this : `<script src="/scripts/esm.js"></script>`
 
-If you want to load a section with a route when the user has loaded his window,
-then you should first register components, sections, pages and routes before
-calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
+### Import sources
 
+Needs:
+* NodeJS v11,
+* ECMAScript6 syntax and
+* `import` keyword for package management.
+
+You can add this package with `npm install amonite-craft`.
+
+### Browserify with Gulp
+
+
+## Amonite-Craft contents
 
 ### Components
 
@@ -159,18 +165,38 @@ const req = new MarketItemRequest()
 req.list().then((xhr) => {})
 ```
 
-## Focus
+## Simple usage
 
-Amonite does not need any library to work. Now you are free!
+### Start
+
+``` js
+import Amonite from "amonite" // or
+const Amonite = require("amonite") // please note library files uses "import" keyword
+```
+
+Callback `cb` is called in code `init(cb)` when window is loaded, or the
+callback is called in code `initAll(cb)` when Page container is set by default
+on `document.body` and the Router start listening registered routes.
+
+``` js
+Amonite.initAll() // or
+Amonite.init(() => {
+  Amonite.Page.setContainer(document.body)
+  Amonite.Router.listenPopstate()
+})
+```
+
+If you want to load a section with a route when the user has loaded his window,
+then you should first register components, sections, pages and routes before
+calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
+
+
+## Documentation
 
 ## Use library files uncompressed
 
-Just be aware code uses NodeJS v11.x.x, ECMAScript6 and `import` keyword for
-package management.
 
 ## Use library ESM
-
-You can load files directly in your window by adding this file in your script: `/esm.js`. Then you can use it like this : `<script src="/scripts/esm.js"></script>`
 
 ## Feel free to improve!
 

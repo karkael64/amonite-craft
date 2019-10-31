@@ -1,15 +1,17 @@
 {
   "name": "amonite-craft",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Amonite lightweight env to create website",
   "keywords": [
     "Amonite",
     "lightweight",
     "website"
   ],
-  "main": "./require.js",
+  "main": "./index.js",
   "scripts": {
-    "test": "gulp test"
+    "esm": "gulp prod",
+    "test": "gulp",
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
@@ -22,28 +24,18 @@
   "author": "\"Karkael Haunter\" <karkael@gmail.com>",
   "license": "apache2",
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "babel-preset-minify": "^0.5.0",
-    "babelify": "^10.0.0",
-    "browserify": "^16.2.3",
-    "chai": "^4.2.0",
-    "eslint": "^5.14.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.2",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "express": "^4.16.4",
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "babel-preset-minify": "^0.5.1",
+    "browserify": "^16.5.0",
+    "express": "^4.17.1",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.7.0",
-    "gulp-iconfont": "^10.0.2",
+    "gulp-iconfont": "^10.0.3",
     "gulp-iconfont-css": "^3.0.0",
     "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.4",
-    "karma": "^4.1.0",
-    "sinon": "^7.3.2",
+    "gulp-sourcemaps": "^2.6.5",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   }

@@ -1,22 +1,23 @@
-const { dest, src } = require('gulp');
-const { map } = require('./gulp-utils');
-const concat = require('gulp-concat');
-const config = require('../test/config/document.config.json');
+const fs = require('fs');
+const { src } = require('gulp')
+const { map, compile } = require('./gulp-utils')
 
-function compile(options) {
-  if (!(typeof options === 'object')) options = {};
-  return map(function (file, callback) {
-    const text = eval('(function(options){ return `' + file.contents.toString() + '`; })')(options);
-    file.contents = Buffer.from(text);
-    callback(null, file);
-  });
-}
+const path = require('path')
+const config = require('../test/config/document.config.json')
+const file = path.resolve('./build', config.page)
 
 function document() {
   return src('./test/config/document.template.html')
     .pipe(compile(config))
-    .pipe(concat('index.html'))
-    .pipe(dest('./build/'));
+    .pipe(map(function (buffer, then) {
+      const dir = path.dirname(file)
+      try {
+        fs.accessSync(dir)
+      } catch (err) {
+        fs.mkdirSync(dir)
+      }
+      fs.writeFile(file, buffer._contents, then)
+    }))
 }
 
-exports.html = document;
+exports.html = document
