@@ -8,7 +8,7 @@ const path = require('path')
 const documentConfig = require('../test/config/document.config.json')
 const file = path.resolve('./build', documentConfig.run)
 
-const { map } = require('./gulp-utils')
+const { map, concat } = require('./gulp-utils')
 
 function babel() {
   var first = true
@@ -24,16 +24,7 @@ function babel() {
   return browserify('./test/app/main/index.js', { debug: true })
     .transform(babelify, { presets: ['@babel/env'], sourceMaps: true, extensions: ['.js', '.json', '.html', '.po'] })
     .bundle()
-    .pipe(map(function (buffer, cb) {
-      count++
-      cb(null, buffer)
-    }))
-    .pipe(map(function (buffer, cb) {
-      count--
-      if (first) fs.writeFile(file, buffer, then(cb))
-      else fs.appendFile(file, buffer, then(cb))
-      first = false
-    }))
+    .pipe(concat(file))
     .pipe(connect.reload())
 }
 

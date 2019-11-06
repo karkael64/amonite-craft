@@ -45,3 +45,4 @@ exports.dev = dev
 exports.babel = babel
 exports.icons = icons
 exports.sass = sass
+exports.html = html
