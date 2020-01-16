@@ -59,12 +59,7 @@ export default class Router {
    */
 
   test () {
-    return this.routes.find((route) => {
-      const args = route.getArgs()
-      if (args !== null) {
-        return route
-      }
-    })
+    return this.routes.find(route => route.getArgs())
   }
 
 

@@ -5,8 +5,8 @@ const connect = require('gulp-connect')
 const babelify = require('./babelify')
 
 const path = require('path')
-const documentConfig = require('../test/config/document.config.json')
-const file = path.resolve('./build', documentConfig.run)
+const documentConfig = require('../../test/config/document.config.json')
+const file = path.resolve(__dirname, '../../build', documentConfig.run)
 
 const { map, concat } = require('./gulp-utils')
 
@@ -21,7 +21,7 @@ function babel() {
     }
   }
 
-  return browserify('./test/app/main/index.js', { debug: true })
+  return browserify('../test/app/main/index.js', { debug: true })
     .transform(babelify, { presets: ['@babel/env'], sourceMaps: true, extensions: ['.js', '.json', '.html', '.po'] })
     .bundle()
     .pipe(concat(file))

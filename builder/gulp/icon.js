@@ -5,8 +5,8 @@ const { map } = require('./gulp-utils')
 
 const fs = require('fs')
 const path = require('path')
-const documentConfig = require('../test/config/document.config.json')
-const dir = path.resolve('./build', documentConfig.fonts);
+const documentConfig = require('../../test/config/document.config.json')
+const dir = path.resolve('../build', documentConfig.fonts);
 
 const fontName = 'icons'
 

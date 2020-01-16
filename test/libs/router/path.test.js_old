@@ -1,0 +1,157 @@
+import Path from "../../../libs/router/path"
+
+
+function deepEqualObject (obj1, obj2) {
+  const keys1 = Object.keys(obj1), keys2 = Object.keys(obj2)
+  if (keys1.length !== keys2.length) return false
+  return !keys1.find((key1) => {
+    if (!keys2.includes(key1)) return true
+    const
+      val1 = keys1[key1],
+      val2 = keys2[key1],
+      type1 = typeof val1,
+      type2 = typeof val2;
+    if (type1 !== type2) return true
+    if (type1 === "object" && !deepEqualObject(val1, val2)) return true
+    if (type1 === "function" && type1.toString() !== type2.toString()) return true
+    if (val1 !== val2) return true
+    return false
+  })
+}
+
+
+describe("Test Path", function () {
+  describe("Create a path from string", function () {
+    describe("Common hard path", function () {
+      const p1 = new Path("/hello/world:string/:number/name:/index.html")
+
+      const args = p1.extractArgs("/hello/world:unicorn/18/name:poney/index.html")
+      expect(args.length, 6, "path should contain 6 items")
+      expect(deepEqualObject(args[0], {value: ""}), true, "first chunk is empty because path starts with '/'")
+      expect(deepEqualObject(args[1], {value: "hello"}), true, "second chunk is only 'hello'")
+      expect(deepEqualObject(args[2], {value: "unicorn", type: "string", key: "world"}), true, "third chunk")
+      expect(deepEqualObject(args[3], {value: 18, type: "number"}), true, "fourth chunk")
+      expect(deepEqualObject(args[4], {value: "poney", key: "name"}), true, "fifth chunk")
+      expect(deepEqualObject(args[5], {value: "index.html"}), true, "sixth chunk")
+
+      expect(p1.extractArgs(""), false, "empty request should not match")
+      expect(p1.extractArgs("/"), false, "only slash char should not match")
+      expect(p1.extractArgs("/hello"), false, "only first chunk should not match")
+
+      expect(p1.extractArgs("/hello/word:unicorn/18/name:poney/index.html"), false, "third chunk does not match")
+      expect(p1.getComplexityLevel(), 6, "complexity is level 6")
+    })
+
+
+    describe("Empty path", function () {
+      const p2 = new Path("")
+
+      expect(deepEqualObject(p2.extractArgs(""), [{value: ""}]), true, "only one chunk empty")
+      expect(p2.extractArgs("/"), false, "not other path match (1)")
+      expect(p2.extractArgs("hello"), false, "not other path match (2)")
+      expect(p2.extractArgs("?test"), false, "not other path match (3)")
+      expect(p2.getComplexityLevel(), 1, "complexity is level 1")
+    })
+
+
+    describe("Star path", function () {
+      const p3 = new Path("*")
+
+      expect(deepEqualObject(p3.extractArgs(""), [{value: ""}]), true, "empty path match '*'")
+      expect(deepEqualObject(p3.extractArgs("*"), [{value: "*"}]), true, "path match '*''")
+      expect(deepEqualObject(
+        p3.extractArgs("/hello/world:unicorn/18/name:poney/index.html"),
+        [{value: "/hello/world:unicorn/18/name:poney/index.html"}]
+      ), true, "any long path is returned")
+      expect(p3.getComplexityLevel(), 0, "complexity is level 0")
+    })
+  })
+
+
+  describe("Create a path from array of strings", function () {
+    describe("Classic path", function () {
+      const p4 = new Path(["", "hello", "world:string", ":number", "admin:boolean", "file.ext"])
+
+      const args = p4.extractArgs("/hello/world:unicorn/-16.5/admin:false/file.ext")
+      expect(args.length, 6, "path count 6 chunks")
+      expect(deepEqualObject(args[0], {value: ""}), true, "path chunk 0 matched!")
+      expect(deepEqualObject(args[1], {value: "hello"}), true, "path chunk 1 matched!")
+      expect(deepEqualObject(args[2], {key: "world", value: "unicorn", type: "string"}), true, "path chunk 2 matched!")
+      expect(deepEqualObject(args[3], {type: "number", value: -16.5}), true, "path chunk 3 matched!")
+      expect(deepEqualObject(args[4], {key: "admin", type: "boolean", value: false}), true, "path chunk 4 matched!")
+      expect(deepEqualObject(args[5], {value: "file.ext"}), true, "path chunk 5 matched!")
+    })
+
+
+    describe("Star path", function () {
+      const p5 = new Path(["hello", "*", "you", "*"])
+
+      const args = p5.extractArgs("hello/world/you/any/one.js")
+      expect(args.length, 4, "path count 4 chunks")
+      expect(deepEqualObject(args[0], {value: "hello"}), true, "path chunk 0 matched")
+      expect(deepEqualObject(args[1], {value: "world"}), true, "path chunk 1 matched")
+      expect(deepEqualObject(args[2], {value: "you"}), true, "path chunk 2 matched")
+      expect(deepEqualObject(args[3], {value: "any/one.js"}), true, "path chunk 3 matched")
+
+      expect(p5.extractArgs("hello/no/one/you/bad"), false, "a star in middle of request means a chunk with any value, no more")
+    })
+  })
+
+
+  describe("Create a path from array of functions", function () {
+    function containA (found) { if (found.match(/a/)) return {found}; throw new Error("Does not match containA") }
+    function oddNumber (test) { const int = parseInt(test); if (!isNaN(int) && (int%2 === 1)) return {int}; throw new Error("Does not match containA") }
+    const p6 = new Path([containA, oddNumber, containA])
+
+    const args = p6.extractArgs("container/555/add")
+    expect(args.length, 3, "path count 3 chunks")
+    expect(deepEqualObject(args[0], {found: "container"}), true, "path chunk 0 matched")
+    expect(deepEqualObject(args[1], {int: 555}), true, "path chunk 1 matched")
+    expect(deepEqualObject(args[2], {found: "add"}), true, "path chunk 2 matched")
+
+    expect(p6.extractArgs("item/444/show"), false, "should match function conditions (1)")
+    expect(p6.extractArgs("container/555/show"), false, "should match function conditions (2)")
+    expect(p6.extractArgs("item/555/add"), false, "should match function conditions (3)")
+    expect(p6.extractArgs("container/444/add"), false, "should match function conditions (4)")
+    expect(p6.extractArgs("container/555/add/main"), false, "shpuld match size (1)")
+    expect(p6.extractArgs("/container/555/add"), false, "shpuld match size (2)")
+  })
+
+
+  describe("Create a path from array of objects", function () {
+    const ruleKey  = { key: "key" }
+    const ruleAdmin = { regexp: /admin/ }
+    const ruleEmpty = {}
+    const ruleDay = { key: "date", regexp: /\d{4}-\d{2}-(\d{2})/, found: {1: 10} }
+    const ruleBool = { type: "boolean" }
+
+    const p7 = new Path([ruleKey, ruleAdmin, ruleEmpty, ruleDay, ruleBool])
+    const args = p7.extractArgs("key:any012/madmind/(-µ:)!/date:2000-01-10/false")
+    expect(args.length, 5, "path count 5 chunks")
+    expect(deepEqualObject(args[0], { key: "key", value: "any012" }), true, "path chunk 0 matched")
+    expect(args[1].value, "madmind", "path chunk 1 value matched")
+    expect(args[1].match.index, 1, "path chunk 1 matched at index 1")
+    expect(deepEqualObject(args[2], { key: "(-µ", value: ")!"}), true, "path chunk 2 matched")
+    expect(args[3].key, "date", "path chunk 3 key matched")
+    expect(args[3].value, "2000-01-10", "path chunk 3 key matched")
+    expect(args[3].match[1], "10", "path chunk 3 matched a group in regexp")
+    expect(deepEqualObject(args[4], {value: false}), true, "path chunk 4 matched")
+  })
+
+
+  describe("Register format", function () {
+    const p4 = new Path("çà@:unknown/^ù*$/*")
+
+    expect(p4.extractArgs("çà@:test/^ù*$/any/thing.else"), false, "strange path doesn't match unknown type")
+
+    Path.registerFormat("unknown", function (value) {
+      if (value === "test") return true;
+      else throw new Error("Bad type: expect argument to be \"test\".")
+    })
+
+    expect(deepEqualObject(
+      p4.extractArgs("çà@:test/^ù*$/any/thing.else"),
+      [{key: "çà@", type: "unknown", value: "test"}, {value: "^ù*$"}, {value: "any/thing.else"}]
+    ), true, "strange path does match unknown type just registered")
+  })
+})

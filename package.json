@@ -7,7 +7,14 @@
     "lightweight",
     "website"
   ],
-  "main": "./index.js",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "esm.js",
+    "libs/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "esm": "gulp prod",
     "test": "gulp",
@@ -26,7 +33,9 @@
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/preset-env": "^7.6.3",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-minify": "^0.5.1",
+    "babel-preset-stage-0": "^6.24.1",
     "browserify": "^16.5.0",
     "express": "^4.17.1",
     "gulp": "^4.0.2",

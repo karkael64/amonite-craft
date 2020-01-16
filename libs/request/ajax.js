@@ -20,7 +20,9 @@ function ajax (...args) {
       resolve(xhr)
     })
     xhr.addEventListener("error", () => {
-      reject(xhr)
+      const err = new Error(`Request ${builder.method} ${builder.uri} failed`)
+      err.xhr = xhr
+      reject(err)
     })
 
     xhr.open(builder.method, builder.uri)

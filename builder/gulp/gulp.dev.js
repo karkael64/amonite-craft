@@ -7,7 +7,7 @@ const { sass, reloadSass } = require('./sass')
 const { html } = require('./document')
 
 const Express = require('express')
-const expressRoute = require('../test/stub/api')
+const expressRoute = require('../../test/stub/api')
 
 const { babel, reloadBabel } = require('./babel')
 const scss = series(icons, sass)
@@ -27,7 +27,7 @@ function stub(then) {
 function local(then) {
   connect.server({
     port: 3000,
-    root: './build/',
+    root: '../build/',
     livereload: true
   })
   then()

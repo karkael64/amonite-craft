@@ -6,9 +6,9 @@ const concat = require('gulp-concat')
 const connect = require('gulp-connect')
 
 const path = require('path')
-const documentConfig = require('../test/config/document.config.json')
+const documentConfig = require('../../test/config/document.config.json')
 const file = path.basename(documentConfig.design)
-const dir = path.resolve('./build', path.dirname(file))
+const dir = path.resolve('../build', path.dirname(file))
 
 function sass() {
   return src('./test/app/**/*.scss')
