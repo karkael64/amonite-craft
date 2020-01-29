@@ -1,9 +1,23 @@
 const {exec} = require("child_process")
 const path = require("path")
 
+
+/**
+ * @function getTestFiles list directory and subdirectories items of `dir`.
+ * @param {string} dir directory starting
+ * @param {string} match the filename regexp
+ * @return {Promise.<{Array.[{string}]} dirItems>.<{Error} err>} resolves the
+ *    item files or reject command (dir does not exist, regexp error, dir is
+ *    not authorized)
+ */
+
 function getTestFiles (dir = ".", match = "\\.test\\.js$") {
   return new Promise((resolve, reject) => {
-    exec(`find ${dir} | grep -e '${match}'`, (err, msg) => {
+    const cmd = (process.platform.substr(0,3) === "win") ?
+      `dir /s /b /o:n | findstr -r '${match}'` :
+      `find ${dir} | grep -e '${match}'`
+
+    exec(cmd, (err, msg) => {
       if (err) reject(err)
       else {
         const paths = msg
@@ -13,8 +27,6 @@ function getTestFiles (dir = ".", match = "\\.test\\.js$") {
         resolve(paths)
       }
     })
-    // Windows style:
-    // exec(`dir /s /b /o:n | findstr -r '${match}'`, (err, msg) => {})
   })
 }
 

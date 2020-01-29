@@ -102,7 +102,7 @@ const FORMATS = {
       dt.setMinutes(found[2])
       if (found[3]) dt.setSeconds(found[4])
       if (found[5]) dt.setMilliseconds(found[6])
-      return
+      return dt
     }
     else
       throw new ChunkError("Bad type: expect argument to be a time.")
@@ -129,6 +129,8 @@ const FORMATS = {
       throw new ChunkError("Bad type: expect argument to be an integer.")
   }
 }
+
+FORMATS[''] = FORMATS['any']
 
 function isObject(el) {
   return typeof el === "object" && el !== null
@@ -319,7 +321,14 @@ class Chunk {
   }
 
   createPath (value) {
-    return createPath(this.rule, "" + value)
+    if (typeof value === "object") {
+      value = value.value
+    }
+    if (~["string", "number"].indexOf(typeof value)) {
+      return createPath(this.rule, ""+value)
+    } else {
+      throw new Error("First parameter should be a string, a number or an object containing \"value\" field")
+    }
   }
 
   setType (type) {

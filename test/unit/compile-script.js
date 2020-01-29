@@ -1,7 +1,5 @@
-const fs = require("fs")
-const path = require("path")
-const babel = require("./babel")
-const getTestFiles = require("./find-test-files")
+const vm = require("vm")
+const { babel, translators } = require("./babel")
 const getRequireEntry = require("./require-file")
 
 async function extractRequires (from, code) {
@@ -15,36 +13,26 @@ async function extractRequires (from, code) {
     } else {
       notfoundpaths.push(str)
     }
-  }));
+  }))
 
   if (notfoundpaths.length) throw new Error(`These paths are not resolved: ${notfoundpaths.map(JSON.stringify).join(", ")}`)
   return foundpaths
 }
 
 
-async function getTestFilesCode (dir = ".", match = "\\.test\\.js$") {
-  const paths = await getTestFiles(dir, match)
-  const joiner = new JoinScripts
-  await Promise.all(paths.map(joiner.load.bind(joiner)))
-  return joiner.concat()
-}
-
-async function compileFile (src) {
-  const joiner = new JoinScripts
-  await joiner.load(src)
-  return joiner.concat()
-}
-
-
 class JoinScripts {
-  constructor () {
+  constructor (opts) {
     this.files = []
+    if (typeof opts === "object" && opts) {
+      this.options = opts
+    }
   }
 
   async load (path) {
     if (!this.entry) this.entry = path
     await this.loadFileWithRequires(path)
     this.composeRequires()
+    return this
   }
 
   async loadFileWithRequires (path) {
@@ -55,11 +43,12 @@ class JoinScripts {
     }
     this.files.push(file)
 
-    const code = await babel(await getRequireEntry(path))
+    const code = await babel(await getRequireEntry(path), this.options)
     const reqs = await extractRequires(path, code)
     Object.assign(file, {code, reqs})
 
     await Promise.all(Object.keys(reqs).map(this.loadFileWithRequires.bind(this)))
+    return this
   }
 
   composeRequires () {
@@ -76,18 +65,32 @@ class JoinScripts {
       obj.reqsIndex = reqsIndex
     })
     this.entryIndex = listFiles[this.entry]
+    return this
   }
 
   concat () {
-    return `(function(e,f){
-function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}
-r({"":e})("")
-})(${this.entryIndex}, [${this.files.map(obj => `[${JSON.stringify(obj.reqsIndex)},function (require,module,exports) {${obj.code}\n}]`).join(",")}]);
-`;
+    return `(function(e,f){function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}r({"":e})("")})(${this.entryIndex}, [${this.files.map(obj => `[${JSON.stringify(obj.reqsIndex)},function (require,module,exports) {${obj.code}\n}]`).join(",")}]);`
   }
 }
 
-module.exports = {
-  getTestFilesCode,
-  compileFile
+/**
+ * @function compileScript translate a script entry `src` to an only one
+ *    executable script with its required files
+ * @param {object} opts the options for the babel translation
+ * @param {string} src the entry script path
+ * @return {Promise.<{vm.Script} script>.<{Error} err>} reject an error if :
+ *    - a file required is not reachable
+ *    - there is an error at compilation
+ */
+
+async function compileScript (src, opts) {
+  const joiner = new JoinScripts(opts)
+  const script = (await joiner.load(src)).concat()
+  return new vm.Script(script)
 }
+
+
+module.exports = Object.assign(compileScript, {
+  compileScript,
+  translators
+})

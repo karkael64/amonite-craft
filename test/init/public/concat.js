@@ -3880,7 +3880,6 @@ function ruleToFunction(rule) {
       if (chunked.length > 1) {
         var ckey = chunked.shift();
         var cvalue = chunked.join(":");
-        console.log(rule.key !== undefined && rule.key !== ckey, rule.key !== undefined, rule.key !== ckey);
 
         if (rule.key !== undefined && rule.key !== ckey) {
           throw new Error("Bad type: chunk key doesn't match string.");

@@ -11,48 +11,16 @@ function readFile (path) {
   })
 }
 
-function babel (path, opts) {
-  if (!opts) {
-    opts = {
-      sourceMaps: false,
-      presets: ['@babel/env']
-    }
-  }
-  opts.filename = path
-  return new Promise((resolve, reject) => {
-    readFile(path).catch(reject).then((contents) => {
-      const cfg = babelCore.loadPartialConfig(opts)
-      babelCore.transform(prepare(contents, path), cfg.options, (err, obj) => {
-        if (err) reject(err)
-        else resolve(obj.code)
-      })
-    })
-  })
-}
-
-function prepare(data, filename) {
-  let ext = path.extname(filename)
-
-  if ([".js"].indexOf(ext) !== -1) {
-    return data
-  }
-  if ([".html"].indexOf(ext) !== -1) {
-    return preparePlain(data)
-  }
-  if ([".json"].indexOf(ext) !== -1) {
-    return prepareJson(data)
-  }
-  if ([".po"].indexOf(ext) !== -1) {
-    return preparePo(data)
-  }
+function prepareJs(data) {
+  return data
 }
 
 function preparePlain(data) {
-  return Buffer.from("export default function(options){\n\treturn `\n" + data.toString() + "`\n}\n")
+  return Buffer.from("export default function(options){\n\treturn `\n" + data + "`\n}\n")
 }
 
 function prepareJson(data) {
-  return Buffer.from("export default " + data.toString() + "\n")
+  return Buffer.from("export default " + data + "\n")
 }
 
 function preparePo(data) {
@@ -70,4 +38,52 @@ function preparePo(data) {
   return Buffer.from("export default " + JSON.stringify(result, null, 2) + "\n")
 }
 
-module.exports = babel
+const translators = {
+  ".js": prepareJs,
+  ".json": prepareJson,
+  ".po": preparePo
+}
+
+function prepare(data, filename) {
+  const
+    ext = path.extname(filename),
+    trans = typeof translators[ext] === "function" ? translators[ext] : preparePlain
+  return trans(data.toString())
+}
+
+
+/**
+ * @function babel promisify the babel function, and helps the translation of
+ *    non-javascript files (json and po-translator files) or return it as a
+ *    simple text files.
+ * @param {string} path the file to read
+ * @param {object} opts the options for the babel translation
+ * @param {object|undefined} opts the options to send to babel
+ * @return {Promise.<{string} code>.<{Error}> err} resolve the script or reject
+ *    and error if files is not reachable.
+ */
+
+function babel (path, opts) {
+  if (!opts || !(typeof opts === "object")) {
+    opts = {
+      sourceMaps: false,
+      presets: ["@babel/env", "minify"],
+      comments: false
+    }
+  }
+  opts.filename = path
+  return new Promise((resolve, reject) => {
+    readFile(path).catch(reject).then((contents) => {
+      const cfg = babelCore.loadPartialConfig(opts)
+      babelCore.transform(prepare(contents, path), cfg.options, (err, obj) => {
+        if (err) reject(err)
+        else resolve(obj.code)
+      })
+    })
+  })
+}
+
+module.exports = Object.assign(babel, {
+  babel,
+  translators
+})

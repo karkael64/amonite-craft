@@ -17,13 +17,20 @@ class Route {
    */
 
   constructor (path, controller) {
-    if (typeof path !== "string")
+    if (typeof path === "string") {
+      path = path.split("/")
+    }
+    if (Array.isArray(path)) {
+      this.chunks = path.map(chunk => new Chunk(chunk))
+    }
+    else {
       throw new Error("First parameter should be a string.")
-    if (typeof controller !== "function")
+    }
+
+    if (typeof controller !== "function") {
       throw new Error("Second parameter should be a function.")
-    this.path = path
+    }
     this.controller = controller
-    this.chunks = path.split("/").map(chunk => new Chunk(chunk))
     this.noEnd = this.chunks[this.chunks.length-1].original === "*"
   }
 
@@ -65,14 +72,24 @@ class Route {
    */
 
   getArgs () {
-    const items = Route.getBrowserRequest().split("/"),
-      chunks = this.chunks
+    const items = Route.getBrowserRequest().split("/")
 
     try {
-      return this.chunks.map((chunk) => {
-        const res = chunk.extractArgs(items[key])
+      let i = 0
+      const args = this.chunks.map((chunk) => {
+        const item = items[i++]
+        const res = chunk.extractArgs(item)
         return res
       })
+      if (this.chunks[i-1].original === "*") {
+        args.pop()
+        args.push({
+          value: items.slice(i-1).join("/")
+        })
+      } else if (i !== items.length) {
+        return null
+      }
+      return args
     } catch (e) {
       return null
     }
@@ -101,9 +118,7 @@ class Route {
       args = []
     }
 
-    return this.chunks.map((chunk, key) => {
-      chunk.createPath(args[key])
-    }).join("/")
+    return this.chunks.map((chunk, key) => chunk.createPath(args[key])).join("/")
   }
 
 

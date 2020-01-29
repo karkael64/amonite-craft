@@ -60,6 +60,16 @@ async function getPathEntry (str) {
   return null
 }
 
+/**
+ * @function getRequireEntry resolve a string path (formatted for nodejs
+ *    `require` function) to the filesystem absolute path. Also reads the
+ *    `node_modules` path and `package.json`.
+ * @param {string} required path of a nodejs require function
+ * @param {string} from path of the file calling the require function
+ * @return {Promise.<{string} absolutePath>.<{Error} err> resolve the
+ *    absolute path
+ */
+
 async function getRequireEntry (required, from) {
   if (!from) from = process.cwd()
   if (required.match(/^\.{0,2}\//)) {

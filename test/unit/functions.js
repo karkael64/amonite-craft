@@ -1,45 +1,7 @@
-const {exec} = require("child_process")
+const { exec } = require("child_process")
 const fs = require("fs")
 const path = require("path")
 const babelCore = require("@babel/core")
-
-
-class MokeEnv {
-  constructor () {
-    this.restituteItems = []
-  }
-
-  moke (obj, field, replacement) {
-    this.restituteItems.push({
-      obj,
-      field,
-      descriptor: Object.getOwnPropertyDescriptor(obj, field)
-    })
-    obj[field] = replacement
-  }
-
-  mokeDescriptor (obj, field, desc) {
-    this.restituteItems.push({
-      obj,
-      field,
-      descriptor: Object.getOwnPropertyDescriptor(obj, field)
-    })
-    Object.defineProperty(obj, field, desc)
-  }
-
-  unmoke (obj, field) {
-    const key = this.restituteItems.findKey(item => item.obj === obj && item.field === field)
-    if (key) {
-      const found = this.restituteItems.splice(key, 1)
-      Object.defineProperty(found.obj, found.field, found.descriptor)
-    }
-  }
-
-  unmokeAll () {
-    this.restituteItems.forEach(item => Object.defineProperty(item.obj, item.field, item.descriptor))
-    this.restituteItems.splice(0)
-  }
-}
 
 
 //# CLASS TestScope
@@ -142,13 +104,13 @@ class TestScope {
   }
 
   incrExpect () {
-    this.countExpect++;
-    if (this.parent) this.parent.incrExpect();
+    this.countExpect++
+    if (this.parent) this.parent.incrExpect()
   }
 
   incrError () {
-    this.countError++;
-    if (this.parent) this.parent.incrError();
+    this.countError++
+    if (this.parent) this.parent.incrError()
   }
 
   static getCurrent () {
@@ -158,23 +120,35 @@ class TestScope {
   static stack = []
 }
 
+
+/**
+ * @function describe register a function `fn` to execute tests in its
+ *    execution context titled `title`.
+ * @param {string} title to know what does the function tests
+ * @param {function} fn execution context for tests
+ * @return {Promise.<>.<>}
+ */
+
 async function describe (title, fn) {
   const scope = (new TestScope(title, fn))
   if (!scope.parent) {
-    try {
-      await scope.execute()
-    }
-    catch (e) {
-      console.error("\n" + e.toString())
-    }
-    globalMoke.unmokeAll()
+    await scope.execute()
   }
 }
+
+
+/**
+ * @function expect verify `value` is strictly equal to `toBe`, or writes and
+ *    throws error `msgError`.
+ * @param {*} value
+ * @param {*} toBe
+ * @param {string|undefined} msgError
+ */
 
 function expect (value, toBe, msgError) {
   const
     desc = TestScope.getCurrent(),
-    depth = desc ? desc.depth : "";
+    depth = desc ? desc.depth : ""
 
   if (desc) {
     desc.incrExpect()
@@ -192,26 +166,82 @@ function expect (value, toBe, msgError) {
   }
 }
 
-const globalMoke = new MokeEnv
 
-function moke (obj, field, replacement) {
-  globalMoke.moke(obj, field, replacement)
+/**
+ * @function objectEquiv compare fields of the two objects as parameter,
+ *    but not hidden properties or class builders. It's helpfull for object
+ *    comparision without creating new class instance.
+ * @param obj1 {object}
+ * @param obj2 {object}
+ * @return {boolean} `true` if objects are similar
+ */
+
+function objectEquiv (obj1, obj2) {
+  const keys1 = Object.keys(obj1), keys2 = Object.keys(obj2)
+  if (keys1.length !== keys2.length) return false
+  return !keys1.find((key1) => {
+    if (!keys2.includes(key1)) return true
+    const
+      val1 = obj1[key1],
+      val2 = obj2[key1],
+      type1 = typeof val1,
+      type2 = typeof val2
+    if (type1 !== type2) return true
+    if (type1 === "object") return !objectEquiv(val1, val2)
+    if (type1 === "function") return type1.toString() !== type2.toString()
+    if (val1 !== val2) return true
+    return false
+  })
 }
 
-function mokeDescriptor (obj, field, desc) {
-  globalMoke.mokeDescriptor(obj, field, replacement)
+
+/**
+ * @function shouldThrow execute the parameter `fn` and catch expected error
+ * @param {function} fn tested function
+ * @return {boolean} `true` if function thrown anything
+ */
+
+function shouldThrow (fn) {
+  try {
+    fn()
+    return false
+  } catch (e) {
+    return true
+  }
 }
 
-function unmoke (obj, field) {
-  globalMoke.unmoke(obj, field)
+
+/**
+ * @function expectThrow is a short for expect and shouldThrow
+ * @param {function} fn
+ * @param {string|undefined} msgError
+ */
+
+function expectThrow (fn, msgError) {
+  return expect(shouldThrow(fn), true, msgError)
 }
 
-function unmokeAll () {
-  globalMoke.unmokeAll()
+
+/**
+ * @function expectEquiv is a short for expect and objectEquiv
+ * @param {*} value
+ * @param {*} toBe
+ * @param {string|undefined} msgError
+ */
+
+function expectEquiv (value, toBe, msgError) {
+  return expect(objectEquiv(value, toBe), true, msgError)
 }
 
-module.exports = {
+
+const global = {
   describe,
+  objectEquiv,
+  shouldThrow,
   expect,
-  moke
+  expectThrow,
+  expectEquiv,
+  console
 }
+
+module.exports = global.global = global
