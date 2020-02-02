@@ -1,8 +1,10 @@
 import Route from "../../../libs/router/route"
 
 describe("Test Class Route", function () {
-  global.window = { location: { hash: "" } }
-  global.window.window = global.window
+  if (!global.window) {
+    global.window = {location: {hash: ""}};
+    global.window.window = global.window;
+  }
 
   expect(!!Route, true, "First expect in class Route")
   expect(!!(new Route("", ()=>{})), true, "Can instanciate class Route")

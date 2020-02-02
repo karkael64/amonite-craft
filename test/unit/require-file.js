@@ -1,9 +1,9 @@
 const fs = require("fs")
 const path = require("path")
 
-function fileExists (path) {
+function fileExists (filepath) {
   return new Promise((resolve, reject) => {
-    fs.stat(path, (err, data) => {
+    fs.stat(filepath, (err, data) => {
       if (err) return resolve(false)
       if (data.isFile()) return resolve(true)
       resolve(false)
@@ -11,9 +11,9 @@ function fileExists (path) {
   })
 }
 
-function dirExists (path) {
+function dirExists (dirpath) {
   return new Promise((resolve, reject) => {
-    fs.stat(path, (err, data) => {
+    fs.stat(dirpath, (err, data) => {
       if (err) return resolve(false)
       if (data.isDirectory()) return resolve(true)
       resolve(false)
@@ -33,9 +33,9 @@ function getNodeModulesPath (from) {
   })
 }
 
-function readJsonFile (path) {
+function readJsonFile (filepath) {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, (err, contents) => {
+    fs.readFile(filepath, (err, contents) => {
       if (err) reject(err)
       else resolve(JSON.parse(contents.toString()))
     })

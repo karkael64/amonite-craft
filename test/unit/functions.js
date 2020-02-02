@@ -1,11 +1,3 @@
-const { exec } = require("child_process")
-const fs = require("fs")
-const path = require("path")
-const babelCore = require("@babel/core")
-
-
-//# CLASS TestScope
-
 class TestScope {
   constructor (title, run) {
     this.title = title

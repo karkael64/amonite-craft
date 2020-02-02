@@ -51,6 +51,16 @@ function prepare(data, filename) {
   return trans(data.toString())
 }
 
+function sourcemapFilepath(filepath) {
+  const fileChunks = filepath.split("/"),
+    rootChunks = process.cwd().split("/")
+  while (fileChunks[0] === rootChunks[0]) {
+    fileChunks.shift()
+    rootChunks.shift()
+  }
+  return "/" + fileChunks.join("/")
+}
+
 
 /**
  * @function babel promisify the babel function, and helps the translation of
@@ -63,21 +73,23 @@ function prepare(data, filename) {
  *    and error if files is not reachable.
  */
 
-function babel (path, opts) {
-  if (!opts || !(typeof opts === "object")) {
-    opts = {
-      sourceMaps: false,
-      presets: ["@babel/env", "minify"],
-      comments: false
-    }
+function babel (path, editOpts) {
+  const opts = {
+    sourceFileName: sourcemapFilepath(path),
+    presets: ["@babel/env"/*, "minify"*/],
+    ast: true,
+    sourceMap: true,
+    comments: false
   }
-  opts.filename = path
+  if (editOpts && (typeof editOpts === "object")) {
+    Object.assign(opts, editOpts)
+  }
   return new Promise((resolve, reject) => {
     readFile(path).catch(reject).then((contents) => {
       const cfg = babelCore.loadPartialConfig(opts)
       babelCore.transform(prepare(contents, path), cfg.options, (err, obj) => {
         if (err) reject(err)
-        else resolve(obj.code)
+        else resolve(obj)
       })
     })
   })
