@@ -21,22 +21,29 @@ async function extractRequires (from, code) {
   return foundpaths
 }
 
+function searchRequireIntoAst(obj, excludes = []) {
+  if (~excludes.indexOf(obj)) {
+    return []
+  }
+
+  const found = []
+  if (Array.isArray(obj)) {
+    obj.forEach(sub => searchRequireIntoAst(sub, excludes).forEach(item => found.push(item)))
+  }
+  if (obj && typeof obj === "object") {
+    excludes.push(obj)
+    if (obj.callee && obj.callee.name === "require") {
+      found.push(obj.arguments[0].value)
+    } else {
+      Object.keys(obj).forEach(key => searchRequireIntoAst(obj[key], excludes).forEach(item => found.push(item)))
+    }
+  }
+  return found
+}
+
 
 async function extractAstRequires (from, ast) {
-  const foundpaths = {}, notfoundpaths = []
-  const requires = ast.program.body.map(statm => {
-    if (statm.declarations &&
-      statm.declarations[0] &&
-      statm.declarations[0].init &&
-      statm.declarations[0].init.arguments &&
-      statm.declarations[0].init.arguments[0] &&
-      statm.declarations[0].init.arguments[0].callee &&
-      statm.declarations[0].init.arguments[0].callee.name === "require"
-    ) {
-      return statm.declarations[0].init.arguments[0].arguments[0].value
-    }
-    return null
-  }).filter(str => str)
+  const foundpaths = {}, notfoundpaths = [], requires = searchRequireIntoAst(ast.program.body)
 
   await Promise.all(requires.map(async (str) => {
     if (found = await getRequireEntry(str, from)) {
@@ -57,9 +64,7 @@ class JoinScripts {
     if (typeof opts !== "object" || !opts) {
       opts = {sourceMap: true}
     }
-    if (opts.sourceMap !== false) {
-      opts.sourceMap = this.sourceMap = true
-    }
+    opts.sourceMap = this.sourceMap = (opts.sourceMap !== false)
     this.options = opts
   }
 
@@ -105,15 +110,19 @@ class JoinScripts {
   }
 
   getSourceNode () {
-    const chunks = []
+    const chunks = [], hasSourceMap = this.sourceMap
     chunks.push(`(function(e,f){function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}r({"":e})("")})(${this.entryIndex}, [`)
     this.files.forEach((obj, key) => {
       if (key) chunks.push(',')
       chunks.push(`[${JSON.stringify(obj.reqsIndex)},function (require,module,exports) {\n`)
-      const consumer = new SourceMapConsumer(obj.map)
-      const source = SourceNode.fromStringWithSourceMap(obj.code, consumer)
-      // chunks.push(new SourceNode(obj.line, obj.column, obj.path, obj.code))
-      chunks.push(source)
+      if (hasSourceMap) {
+        const consumer = new SourceMapConsumer(obj.map)
+        const source = SourceNode.fromStringWithSourceMap(obj.code, consumer)
+        chunks.push(source)
+      } else {
+        const source = new SourceNode(null, null, obj.path, obj.code)
+        chunks.push(source)
+      }
       chunks.push('\n}]')
     })
     chunks.push(']);')
@@ -121,12 +130,12 @@ class JoinScripts {
   }
 
   concat () {
+    const source = this.getSourceNode()
     if (this.sourceMap) {
-      const source = this.getSourceNode()
       const {code, map} = source.toStringWithSourceMap({ file: this.entry })
       return (code + "\n\n//# sourceMappingURL=data:application/json;charset=utf-8;base64," + Buffer.from(JSON.stringify(map)).toString("base64"))
     } else {
-      return `(function(e,f){function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}r({"":e})("")})(${this.entryIndex}, [${this.files.map(obj => `[${JSON.stringify(obj.reqsIndex)},function (require,module,exports) {${obj.code}\n}]`).join(",")}]);`
+      return source.toString()
     }
   }
 }

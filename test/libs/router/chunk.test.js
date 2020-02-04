@@ -1,14 +1,4 @@
-import "babel-polyfill"
 import Chunk from "../../../libs/router/chunk"
-
-async function sleep(delay = 1000) {
-  const start = Date.now()
-  return new Promise((resolve) => {
-    if (Date.now() > start+delay) {
-      resolve()
-    }
-  })
-}
 
 describe("Test class Chunk", function () {
   describe("Create a Chunk from string", function () {
@@ -17,7 +7,6 @@ describe("Test class Chunk", function () {
       expectEquiv(chunk.extractArgs("hello"), {value: "hello"}, "chunk match hello only")
       expectThrow(() => chunk.extractArgs("hi"), "chunk does not match hi")
       expectThrow(() => chunk.extractArgs("helloo"), "chunk does not match helloo")
-      await sleep(3000)
     })
 
     describe("Key:type format", function () {

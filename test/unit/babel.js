@@ -76,7 +76,7 @@ function sourcemapFilepath(filepath) {
 function babel (path, editOpts) {
   const opts = {
     sourceFileName: sourcemapFilepath(path),
-    presets: ["@babel/env"/*, "minify"*/],
+    presets: ["@babel/env"],
     ast: true,
     sourceMap: true,
     comments: false
