@@ -4,7 +4,7 @@ const browserify = require("browserify")
 const babelify = require("./babelify")
 const { src, map, concat, watch } = require("./stream")
 
-const documentConfig = require("../test/config/document.config.json")
+const documentConfig = require("../../test/config/document.config.json")
 const file = path.resolve("./build", documentConfig.run)
 const extensions = [".js", ".json", ".html", ".po"]
 

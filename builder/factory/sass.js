@@ -4,7 +4,7 @@ const sassStream = require("./stream/sass")
 const watch = require('./stream/watch')
 
 const path = require("path")
-const documentConfig = require("../test/config/document.config.json")
+const documentConfig = require("../../test/config/document.config.json")
 const file = path.resolve("./build", documentConfig.design)
 
 function sass (then) {

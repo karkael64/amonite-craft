@@ -1,6 +1,9 @@
 const fs = require("fs")
 const path = require("path")
 
+let default_root = null
+
+
 function fileExists (filepath) {
   return new Promise((resolve, reject) => {
     fs.stat(filepath, (err, data) => {
@@ -42,8 +45,7 @@ function readJsonFile (filepath) {
   })
 }
 
-async function getNodeModulePathEntry (from, name) {
-  const root = await getNodeModulesPath(from)
+async function getNodeModulePathEntry (root, name) {
   try {
     const config = await readJsonFile(path.resolve(root, name, "package.json"))
     if (config.main) {
@@ -53,10 +55,13 @@ async function getNodeModulePathEntry (from, name) {
   return path.resolve(root, name)
 }
 
-async function getPathEntry (str) {
+async function getPathEntry (str, allowedExtensions) {
   if (await fileExists(str)) return str
-  if (await fileExists(str + ".js")) return str + ".js"
-  if (await fileExists(str + "/index.js")) return str + "/index.js"
+  if (!Array.isArray(allowedExtensions)) allowedExtensions = [".js"]
+  for (let i = 0; i < allowedExtensions.length; i++) {
+    if (await fileExists(str + ".js")) return str + allowedExtensions[i]
+    if (await fileExists(str + "/index.js")) return str + "/index" + allowedExtensions[i]
+  }
   return null
 }
 
@@ -70,12 +75,24 @@ async function getPathEntry (str) {
  *    absolute path
  */
 
-async function getRequireEntry (required, from) {
+async function getRequireEntry (required, from, allowedExtensions) {
+  if (default_root === null) {
+    default_root = await getNodeModulesPath(process.cwd())
+  }
   if (!from) from = process.cwd()
   if (required.match(/^\.{0,2}\//)) {
-    return await getPathEntry(path.resolve(path.dirname(from), required))
+    return await getPathEntry(path.resolve(path.dirname(from), required), allowedExtensions)
   } else {
-    return await getPathEntry(await getNodeModulePathEntry(from, required))
+    const
+      custom_root = await getNodeModulesPath(from),
+      custom_path = await getNodeModulePathEntry(custom_root, required),
+      found_path = await getPathEntry(custom_path, allowedExtensions)
+    if (!found_path && custom_root !== default_root) {
+      const default_path = await getNodeModulePathEntry(default_root, required)
+      return await getPathEntry(default_path, allowedExtensions)
+    } else {
+      return found_path
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 const getTestFiles = require("./find-test-files")
-const { compileScript, translators } = require("./compile-script")
+const { compileScript, setTranslator } = require("./compile-script")
 
 
 /**
@@ -24,5 +24,5 @@ async function getTestFilesCode (opts, dir = ".", match = "\\.test\\.js$") {
 
 module.exports = Object.assign(getTestFilesCode, {
   getTestFilesCode,
-  translators
+  setTranslator
 })

@@ -21,9 +21,9 @@ function getTestFiles (dir = ".", match = "\\.test\\.js$") {
       if (err) reject(err)
       else {
         const paths = msg
-                      .split("\n")
-                      .filter(s => s.length)
-                      .map(s => path.resolve(s))
+          .split("\n")
+          .filter(s => s.length)
+          .map(s => path.resolve(s))
         resolve(paths)
       }
     })

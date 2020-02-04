@@ -1,16 +1,16 @@
 const vm = require("vm")
-const { babel, translators } = require("./babel")
+const { babel, setTranslator } = require("./babel-promisify")
 const getRequireEntry = require("./require-file")
 const { SourceNode, SourceMapConsumer } = require("source-map")
 
 
-async function extractRequires (from, code) {
+async function extractRequires (from, code, allowedExtensions) {
   const foundpaths = {}, notfoundpaths = []
   const requires = (code.match(/(^|\W)require\(\s*("[^\"]+"|'[^\']+')\s*\)/g) || [])
     .map(str => str.split(/["']/g)[1])
 
   await Promise.all(requires.map(async (str) => {
-    if (found = await getRequireEntry(str, from)) {
+    if (found = await getRequireEntry(str, from, allowedExtensions)) {
       foundpaths[found] = str
     } else {
       notfoundpaths.push(str)
@@ -42,18 +42,20 @@ function searchRequireIntoAst(obj, excludes = []) {
 }
 
 
-async function extractAstRequires (from, ast) {
+async function extractAstRequires (from, ast, allowedExtensions) {
   const foundpaths = {}, notfoundpaths = [], requires = searchRequireIntoAst(ast.program.body)
 
   await Promise.all(requires.map(async (str) => {
-    if (found = await getRequireEntry(str, from)) {
+    if (found = await getRequireEntry(str, from, allowedExtensions)) {
       foundpaths[found] = str
     } else {
       notfoundpaths.push(str)
     }
   }))
 
-  if (notfoundpaths.length) throw new Error(`These paths are not resolved: ${notfoundpaths.map(JSON.stringify).join(", ")}`)
+  if (notfoundpaths.length) {
+    throw new Error(`These paths are not resolved: ${notfoundpaths.map(JSON.stringify).join(", ")}`)
+  }
   return foundpaths
 }
 
@@ -65,7 +67,9 @@ class JoinScripts {
       opts = {sourceMap: true}
     }
     opts.sourceMap = this.sourceMap = (opts.sourceMap !== false)
+    this.allowedExtensions = opts.allowedExtensions
     this.options = opts
+    delete this.options.allowedExtensions
   }
 
   async load (path) {
@@ -83,9 +87,12 @@ class JoinScripts {
     }
     this.files.push(file)
 
-    const result = await babel(await getRequireEntry(path), this.options)
-    const { code, ast, map } = result
-    const reqs = ast ? await extractAstRequires(path, ast) : await extractRequires(path, code)
+    const allowedExtensions = this.options.allowedExtensions || [".js"]
+
+    const { code, ast, map } = await babel(await getRequireEntry(path, null, allowedExtensions), this.options)
+    const reqs = ast ?
+      await extractAstRequires(path, ast, allowedExtensions) :
+      await extractRequires(path, code, allowedExtensions)
     Object.assign(file, { code, reqs, map })
 
     await Promise.all(Object.keys(reqs).map(this.loadFileWithRequires.bind(this)))
@@ -129,7 +136,7 @@ class JoinScripts {
     return new SourceNode(null, null, this.entry, chunks)
   }
 
-  concat () {
+  toString () {
     const source = this.getSourceNode()
     if (this.sourceMap) {
       const {code, map} = source.toStringWithSourceMap({ file: this.entry })
@@ -154,12 +161,12 @@ class JoinScripts {
 async function compileScript (src, opts) {
   const joiner = new JoinScripts(opts)
   await joiner.load(src)
-  const script = joiner.concat()
+  const script = joiner.toString()
   return new vm.Script(script)
 }
 
 
 module.exports = Object.assign(compileScript, {
   compileScript,
-  translators
+  setTranslator
 })

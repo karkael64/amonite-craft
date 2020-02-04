@@ -1,5 +1,5 @@
 const Express = require("express")
-const expressRoute = require("../test/stub/api")
+const expressRoute = require("../../test/stub/api")
 
 function local(then) {
   console.log("Launch local server at: http://localhost:3000/")

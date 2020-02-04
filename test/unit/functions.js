@@ -79,6 +79,10 @@ class TestScope {
       }
     }
 
+    if (!this.countExpect) {
+      error = new Error("No expectation")
+    }
+
     this.endDate = new Date
     const elapsed = this.endDate.valueOf() - this.startDate.valueOf()
     if (error) {

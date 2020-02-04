@@ -41,24 +41,38 @@ function preparePo(data) {
 const translators = {
   ".js": prepareJs,
   ".json": prepareJson,
-  ".po": preparePo
+  ".po": preparePo,
+  "": preparePlain
 }
 
 function prepare(data, filename) {
   const
     ext = path.extname(filename),
-    trans = typeof translators[ext] === "function" ? translators[ext] : preparePlain
+    trans = typeof translators[ext] === "function" ? translators[ext] : translators[""]
   return trans(data.toString())
 }
 
-function sourcemapFilepath(filepath) {
+function sourcemapFilepath(filepath, fromDir) {
   const fileChunks = filepath.split("/"),
-    rootChunks = process.cwd().split("/")
+    rootChunks = (fromDir || process.cwd()).split("/")
   while (fileChunks[0] === rootChunks[0]) {
     fileChunks.shift()
     rootChunks.shift()
   }
   return "/" + fileChunks.join("/")
+}
+
+
+/**
+ * @function setTranslator set a translator function `fn` for every files with
+ *    extension name `extname`. Default extension name is `""`
+ * @param {string} extname with dot
+ * @param {function} fn translator
+ * @return {string}
+ */
+
+function setTranslator(extname, fn) {
+  translators[extname] = fn
 }
 
 
@@ -97,5 +111,5 @@ function babel (path, editOpts) {
 
 module.exports = Object.assign(babel, {
   babel,
-  translators
+  setTranslator
 })

@@ -2,7 +2,7 @@ const { src, concat } = require("./stream")
 const compile = require("./stream/compile")
 
 const path = require("path")
-const config = require("../test/config/document.config.json")
+const config = require("../../test/config/document.config.json")
 const file = path.resolve("./build", config.page)
 
 function document(then) {

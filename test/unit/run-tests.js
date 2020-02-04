@@ -1,6 +1,6 @@
 const vm = require("vm")
 const path = require("path")
-const { getTestFilesCode, translators } = require("./test-files-code")
+const { getTestFilesCode, setTranslator } = require("./test-files-code")
 const context = require("./functions")
 
 
@@ -45,5 +45,5 @@ async function runTests(opts, dir = "", match = "\\.test\\.js$") {
 module.exports = Object.assign(runTests, {
   runTests,
   context,
-  translators
+  setTranslator
 })
