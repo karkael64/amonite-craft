@@ -22,6 +22,6 @@ export default class ForumRead extends Amonite.Component {
   }
 
   onEdit () {
-    edit.go({ id: this.id })
+    edit.go(["", "", this.id])
   }
 }

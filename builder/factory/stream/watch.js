@@ -1,12 +1,14 @@
+const watcher = require("node-watch")
 const fs = require("fs")
 const map = require("./map")
 
-function watch (listener) {
+function watch (listener, delay = 200) {
   return map((filepath, cb) => {
-    fs.watch(filepath.toString(), {
+    watcher(filepath.toString(), {
       persistent: true,
       recursive: true,
-      encoding: "utf8"
+      encoding: "utf8",
+      ignoreInitial: true
     }, listener)
     cb(null, filepath)
   })
