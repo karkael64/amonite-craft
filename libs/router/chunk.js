@@ -149,12 +149,15 @@ function ruleToObject (rule) {
     if (rule instanceof RegExp) {
       res.regexp = rule
     } else {
-      if (rule.value) res.value = rule.value
-      if (rule.key) res.key = rule.key
-      if (rule.type) res.type = rule.type
-      if (rule.regexp) res.regexp = rule.regexp
-      if (rule.match) res.match = rule.match
-      if (rule.transform) res.transform = rule.transform
+      if (rule.value) {
+        res.value = rule.value
+      } else {
+        if (rule.key) res.key = rule.key
+        if (rule.type) res.type = rule.type
+        if (rule.regexp) res.regexp = rule.regexp
+        if (rule.match) res.match = rule.match
+        if (rule.transform) res.transform = rule.transform
+      }
     }
   }
   if (typeof rule === "function") {
@@ -321,6 +324,9 @@ class Chunk {
   }
 
   createPath (value) {
+    if (this.rule.value !== undefined) {
+      return this.rule.value
+    }
     if (typeof value === "object") {
       value = value.value
     }
@@ -369,6 +375,18 @@ class Chunk {
       throw new TypeError("First parameter should be an Array")
     }
     return this
+  }
+
+  toString () {
+    if (typeof this.original === "string") {
+      return this.original
+    }
+    const val = (this.rule.match && this.rule.math[0] || (this.rule.type && (":" + this.rule.type)) || "*")
+    if (this.rule.key) {
+      return `${this.rule.key}:${val}`
+    } else {
+      return this.rule.value === undefined ? val : this.rule.value
+    }
   }
 
   static addFormat (name, formatter) {

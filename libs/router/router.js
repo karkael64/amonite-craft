@@ -106,7 +106,7 @@ export default class Router {
   static getAll () {
     const list = ROUTERS.map((router) => {
       return router.routes.map((route) => {
-        return route.path
+        return route.toString()
       })
     }).flat()
     if (defaultController) {

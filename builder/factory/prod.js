@@ -7,7 +7,7 @@ const file = path.resolve('./esm.js')
 
 
 function prod(then) {
-  console.log(`Create script file at: ${file}`);
+  console.log(`Create script file at:\t${file}`);
   return src('./builder/factory/windowed.js')
     .pipe(babelStream({presets: ['@babel/env', 'minify'], comments: false}))
     .pipe(concat(file))

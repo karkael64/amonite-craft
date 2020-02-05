@@ -61,7 +61,7 @@ export default class ForumRead extends Amonite.Component {
   }
 
   onCancel (ev, btn) {
-    read.go({ id: this.id })
+    read.go(["", "", this.id])
   }
 
   onDelete (ev, btn) {
@@ -75,7 +75,7 @@ export default class ForumRead extends Amonite.Component {
 
   onSave (ev, btn) {
     this.saveData().then(() => {
-      read.go({ id: this.id })
+      read.go(["", "", this.id])
     }).catch(() => {
       alert("Save failed!")
       btn.rearm()

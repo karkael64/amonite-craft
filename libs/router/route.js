@@ -17,6 +17,7 @@ class Route {
    */
 
   constructor (path, controller) {
+    this.original = path
     if (typeof path === "string") {
       path = path.split("/")
     }
@@ -24,7 +25,7 @@ class Route {
       this.chunks = path.map(chunk => new Chunk(chunk))
     }
     else {
-      throw new Error("First parameter should be a string.")
+      throw new Error("First parameter should be a string or an Array.")
     }
 
     if (typeof controller !== "function") {
@@ -37,13 +38,13 @@ class Route {
 
   /**
    * @method <go> redirect to this controller passing by URL
-   * @param {*} args new arguments for this controller, merged with current arguments
+   * @param {array} args new arguments for this controller, merged with current arguments
    * @return {Route} self
    */
 
   go (args, force) {
-    const params = (typeof args === "object") ? args : {}
-    const path = this.createPath(Object.assign({}, currentArgs, params))
+    const params = Array.isArray(args) ? args : []
+    const path = this.createPath(params || currentArgs)
     if (force && path === Route.getBrowserRequest()) {
       this.run(args)
     } else {
@@ -119,6 +120,15 @@ class Route {
     }
 
     return this.chunks.map((chunk, key) => chunk.createPath(args[key])).join("/")
+  }
+
+
+  toString () {
+    if (typeof this.original === "string") {
+      return this.original
+    } else {
+      return this.chunks.map(chunk => chunk.toString()).join("/")
+    }
   }
 
 

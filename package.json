@@ -34,6 +34,7 @@
     "babel-preset-minify": "^0.5.1",
     "base-test-files": "^1.0.2",
     "express": "^4.17.1",
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.13.1",
+    "node-watch": "^0.6.3"
   }
 }

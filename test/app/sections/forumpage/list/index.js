@@ -28,7 +28,7 @@ export default class ForumList extends Amonite.Component {
 
     this.elements.subjects.forEach((node) => {
       node.addEventListener("click", () => {
-        read.go({ id: node.getAttribute("data-id") })
+        read.go(["", "", node.getAttribute("data-id")])
       })
     })
   }
