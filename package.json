@@ -1,6 +1,6 @@
 {
   "name": "amonite-craft",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Amonite lightweight env to create website",
   "keywords": [
     "Amonite",
@@ -16,9 +16,9 @@
     "README.md"
   ],
   "scripts": {
-    "esm": "gulp prod",
-    "test": "gulp",
-    "start": "gulp"
+    "esm": "node builder/prod",
+    "unit": "cd test && node run",
+    "test": "node builder/dev"
   },
   "repository": {
     "type": "git",
@@ -31,9 +31,9 @@
   "author": "\"Karkael Haunter\" <karkael@gmail.com>",
   "license": "apache2",
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
-    "babel-polyfill": "^6.26.0",
-    "express": "^4.17.1"
+    "babel-preset-minify": "^0.5.1",
+    "base-test-files": "^1.0.2",
+    "express": "^4.17.1",
+    "node-sass": "^4.13.1"
   }
 }

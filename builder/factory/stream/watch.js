@@ -8,6 +8,7 @@ function watch (listener) {
       recursive: true,
       encoding: "utf8"
     }, listener)
+    cb(null, filepath)
   })
 }
 

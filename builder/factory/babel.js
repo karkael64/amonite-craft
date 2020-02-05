@@ -1,18 +1,16 @@
 const path = require("path")
 
-const browserify = require("browserify")
-const babelify = require("./babelify")
-const { src, map, concat, watch } = require("./stream")
+const { src, concat, watch } = require("./stream")
+const babelStream = require("./stream/babel")
 
 const documentConfig = require("../../test/config/document.config.json")
 const file = path.resolve("./build", documentConfig.run)
-const extensions = [".js", ".json", ".html", ".po"]
+const extensions = [".js"]
 
 function babel(then) {
   console.log(`Create script file`);
-  return browserify("./test/app/main/index.js", { debug: true })
-    .transform(babelify, { presets: ["@babel/env"], sourceMaps: true, extensions })
-    .bundle()
+  return src("./test/app/main/index.js")
+    .pipe(babelStream())
     .pipe(concat(file))
     .on("finish", () => {
       console.log(`Script file created at: ${file}`)

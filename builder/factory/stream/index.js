@@ -3,14 +3,16 @@ const map = require("./map")
 const src = require("./src")
 const watch = require("./watch")
 
-function serie () {
+function serie (end) {
   const list = [...arguments]
 
   return function (then) {
     function next () {
-      if (!list.length) then()
+      if (!list.length) {
+        return end()
+      }
+      
       const fn = list.shift()
-
       if (fn.length) {
         return fn(next)
       }
@@ -33,14 +35,15 @@ function parallel (then) {
       if (!len) then()
     }
 
-    list.forEach((fn) => {
+    while (list.length) {
+      const fn = list.shift()
       if (fn.length) {
         fn(end)
       }
       else {
         throw new Error("Function should have a callback")
       }
-    })
+    }
   }
 }
 
