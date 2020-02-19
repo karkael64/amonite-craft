@@ -1,2 +1,2 @@
 const runTests = require("base-test-files")
-runTests()
+runTests().catch(console.error)
