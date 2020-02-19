@@ -19,7 +19,7 @@ function babel(then) {
 }
 
 function reloadBabel(then) {
-  return src("./test/app")
+  return src(["./test/app","./libs"])
     .pipe(map((file, callback) => {
       console.log(`Watch script files at:\t${file}`)
       callback(null, file)

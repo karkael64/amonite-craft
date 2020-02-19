@@ -42,9 +42,9 @@ async function findFiles (matcher, into = "") {
   into = path.resolve(process.cwd(), into)
 
   if (Array.isArray(matcher)) {
-    return matcher.map((match) => {
-      return findFiles(match, into)
-    }).flat()
+    return (await Promise.all(matcher.map(async (match) => {
+      return await findFiles(match, into)
+    }))).flat()
   }
 
   if (typeof matcher === "string") return [path.resolve(into, matcher)]

@@ -8,17 +8,19 @@
     "website"
   ],
   "main": "index.js",
+  "module": "index.js",
+  "browser": "amonite-craft.js",
   "files": [
     "index.js",
-    "esm.js",
+    "amonite-craft.js",
     "libs/",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "esm": "node builder/prod",
-    "unit": "cd test && node run",
-    "test": "node builder/dev"
+    "browser": "node builder/prod",
+    "test": "node builder/dev",
+    "unit": "cd test && node run"
   },
   "repository": {
     "type": "git",

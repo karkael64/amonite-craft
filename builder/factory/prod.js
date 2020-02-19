@@ -3,7 +3,7 @@ const babelStream = require('./stream/babel')
 const { src, concat } = require('./stream')
 
 const path = require('path')
-const file = path.resolve('./esm.js')
+const file = path.resolve('./amonite-craft.js')
 
 
 function prod(then) {
