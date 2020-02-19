@@ -11,20 +11,37 @@ world!
 
 ## Table of Contents
 
-1. Installation
-    1. Install in your browser as a library
-    2. Import sources
-    3. Browserify with Gulp
-    4. Custom streaming build system
-2. Amonite-Craft contents
-3. Simple usage
-4. Documentation
+1. [Installation](#installation)
+    1. [Install in your browser as a library](#install-in-your-browser-as-a-library)
+    2. [Import sources](#import-sources)
+    3. [Browserify with Gulp](#browserify-with-gulp)
+    4. [Custom streaming build system](#custom-streaming-build-system)
+2. [Amonite-Craft contents](#amonite-craft-contents)
+    1. [Components](#components)
+    2. [Routes](#routes)
+    3. [API requests](#api-requests)
+    4. [Custom HTML Elements](#custom-html-elements)
+3. [Simple usage](#simple-usage)
+4. [Documentation](#documentation)
 
 
 ## Installation
 ### Install in your browser as a library
 
-You can load files directly in your window by adding this file in your script: `/esm.js`. Then you can use it like this : `<script src="/scripts/esm.js"></script>`.
+You can load files directly in your window by adding this file in your script: `/amonite-craft.js`, then you can insert it in your HTML file like this :
+
+```html
+<html>
+    <head>
+    </head>
+    <body>
+        <script src="/scripts/amonite-craft/amonite-craft.js"></script>
+        <script>
+            console.log(Amonite);
+        </script>
+    </body>
+</html>
+```
 
 
 ### Import sources
@@ -39,7 +56,7 @@ You can add this package with `npm install amonite-craft`.
 
 ### Browserify with Gulp
 
-Copy here the folder `builder/gulp` and its entry point `builder/gulp.js` to get a working Gulp streaming build system.
+You can copy here the folder `builder/gulp` and its entry point `builder/gulp.js` to get a working Gulp streaming build system.
 
 
 ### Custom streaming build system
@@ -49,7 +66,32 @@ In order to improve systems and do custom unit tests, I use my own `babel-unifye
 * [babel-unifyer](https://github.com/karkael64/babel-unifyer)
 * [base-test-files](https://github.com/karkael64/base-test-files)
 
-Copy here the folder `builder/factory` and its entry points `builder/dev.js` and `builder/prod.js` to get a working & lightweight & customizable streaming build system.
+You can copy here the folder `builder/factory` and its entry points `builder/dev.js` and `builder/prod.js` to get a working & lightweight & customizable streaming build system.
+
+
+### Start
+
+Amonite contains a router and a page builder, you can register manually the page container and URL hash changes, or initialize it with `Amonite.initAll()`.
+
+``` js
+const Amonite = window.Amonite // or
+import Amonite from "amonite-craft" // or
+const Amonite = require("amonite-craft") // please note library files uses "import" keyword
+
+Amonite.initAll() // or
+Amonite.init(() => {
+  Amonite.Page.setContainer(document.body)
+  Amonite.Router.listenPopstate()
+})
+```
+
+Callback `cb` is called in code `init(cb)` when window is loaded, or the
+callback is called in code `initAll(cb)` when Page container is set by default
+on `document.body` and the Router start listening registered routes.
+
+If you want to load a section with a route when the user has loaded his window,
+then you should first register components, sections, pages and routes before
+calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
 
 
 ## Amonite-Craft contents
@@ -145,11 +187,11 @@ Router.setDefault(error404)
 In this example :
 * The function `atFirstCallOnly()` is called one time in all the
 window session. You can use it if you want to improve your website performance
-and do the necessary calculations.
+and do the necessary actions before showing page and section.
 * The function `Section.prototype.setSection()` replaces the current section
 with this section (important: if the current page is different than this
 section's page, then the page is also replaced!).
-* The function `router.add("route", function exec(args) {})` create a route registered in this router. In the above section, the route `list` matches when URL path is `/market` or `/market/` (last slash is optional), and the route `item` matches when URL path is `/market/item/123aze` (or anything else than "123aze"). The arguments `args` are extracted from URL (ie: `{"id": "123aze"}`).
+* The function `router.add("route", function exec(args) {})` create a route registered in this router. In the above section, the route `list` matches when URL path is `/market` or `/market/` (last slash is optional), and the route `item` matches when URL path is `/market/item/123aze` (or anything else than "123aze"). The arguments `args` are extracted from URL (ie: `["", "item", {value: "123aze", type: "integer"}]`).
 
 ### API requests
 
@@ -275,34 +317,9 @@ The constructor is executed only when inserted in DOM, and only one time.
 
 ## Simple usage
 
-### Start
+[See examples here](./EXAMPLES.md)
 
-Amonite contains a router and a page builder, you can register manually the page container and URL hash changes, or initialize it with `Amonite.initAll()`.
 
-``` js
-import Amonite from "amonite-craft" // or
-const Amonite = require("amonite-craft") // please note library files uses "import" keyword
+## Documentation
 
-Amonite.initAll() // or
-Amonite.init(() => {
-  Amonite.Page.setContainer(document.body)
-  Amonite.Router.listenPopstate()
-})
-```
-
-Callback `cb` is called in code `init(cb)` when window is loaded, or the
-callback is called in code `initAll(cb)` when Page container is set by default
-on `document.body` and the Router start listening registered routes.
-
-If you want to load a section with a route when the user has loaded his window,
-then you should first register components, sections, pages and routes before
-calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
-
-## Use library ESM
-
-Download and insert `esm.js` in your project !
-
-## Feel free to improve!
-
-1.  Send me a message or push a commit,
-2.  Use, deform and transform this library in your project.
+[See full page here](./DOC.md)
