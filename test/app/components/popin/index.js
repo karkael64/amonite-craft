@@ -19,7 +19,7 @@ export default class Popin extends Component {
 
   events () {
     return {
-      "close click": "hide"
+      "close @click": "hide"
     }
   }
 

@@ -1,3 +1,4 @@
+import EventTarget from "./libs/layout/event-target";
 import Component from "./libs/layout/component";
 import Section from "./libs/layout/section";
 import Page from "./libs/layout/page";
@@ -20,21 +21,13 @@ function init (then) {
 }
 
 function initAll (then) {
-  if (document.readyState === "complete") {
+  init(() => {
     Page.setContainer();
     Router.listenPopstate();
     if (typeof then === "function") {
       then();
     }
-  } else {
-    window.addEventListener("load", () => {
-      Page.setContainer();
-      Router.listenPopstate();
-      if (typeof then === "function") {
-        then();
-      }
-    });
-  }
+  })
 }
 
 const Amonite = {
@@ -55,6 +48,7 @@ const Amonite = {
 };
 
 export {
+  EventTarget,
   Component,
   Section,
   Page,

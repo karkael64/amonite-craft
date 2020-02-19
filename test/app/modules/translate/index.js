@@ -11,13 +11,12 @@ const LANGUAGES = Object.keys(FILES)
  * @function <translate> search field in json files and if it matches execute
  *    it with other arguments in parameters.
  * @param {String} field
- * @param {*} arguments...
+ * @param {Object} options sent in string template
  * @return {String}
  */
 
 function translate (field, options) {
   const text = FILES[translate.language][field] || ""
-  // eslint-disable-next-line no-eval
   const fn = eval("(function (options) { return `" + text + "` })")
   if (typeof options !== "object") {
     options = {}
@@ -52,7 +51,7 @@ translate.userLanguage = userLanguage
 translate.to = to
 translate.resolve = resolve
 
-translate.userLanguage(LANGUAGES[0])
-translate.userLanguage((navigator.language || navigator.userLanguage || "").substr(0, 2).toLowerCase())
+userLanguage(LANGUAGES[0])
+userLanguage((navigator.language || navigator.userLanguage || "").substr(0, 2).toLowerCase())
 
-export default translate
+export { translate as default, translate, userLanguage, to, resolve }

@@ -1,3 +1,6 @@
+import EventTarget from "./event-target"
+
+
 function container (el, self, args) {
   if (el instanceof HTMLElement) {
     return el
@@ -44,7 +47,7 @@ function elements (el, self, args) {
       if (typeof el[name] === "string") {
         result[name] = [...into.querySelectorAll(el[name])]
       }
-      else if (el[name] && el[name].forEach) {
+      else if (Array.isArray(el[name])) {
         result[name] = el[name]
       }
     })
@@ -55,74 +58,78 @@ function elements (el, self, args) {
   }
 }
 
-function events (el, self, args) {
+function events (el, self, args, parent_selectors = [], parent_events = []) {
   if (typeof el === "function") {
-    return events(el.apply(self, args), self, args)
+    if (parent_events.length) {
+      const fn = function () {
+        el.apply(self, args)
+      };
+      events_gettargets(parent_selectors, self).forEach(target => {
+        parent_events.forEach(eventname => {
+          target.addEventListener(eventname, el)
+        })
+      })
+    } else {
+      events(el.apply(self, args), self, args, parent_selectors, parent_events)
+    }
+  }
+  else if (typeof el === "string" && typeof self[el] === "function") {
+    events_gettargets(parent_selectors, self).forEach(target => {
+      parent_events.forEach(eventname => {
+        target.addEventListener(eventname, self[el].bind(self))
+      })
+    })
+  }
+  else if (Array.isArray(el)) {
+    el.forEach(val => events(val, self, args, parent_selectors, parent_events))
   }
   else if (typeof el === "object") {
-    Object.keys(el).forEach((pair) => {
-      const split = pair.split(" ")
-      if ((typeof el[pair] === "string") && (split.length > 1)) {
-        const evs = split.pop()
-        const selectors = split.join(" ")
-        el[pair].split(",").forEach((method) => {
-          evs.split(",").forEach((eventName) => {
-            selectors.split(",").forEach((selector) => {
-              let node
-              const fn = () => {
-                self[method].apply(self, arguments)
-              }
-              if (eventName && (typeof self[method] === "function")) {
-                if ((node = self.elements[selector]) instanceof HTMLElement) {
-                  node.addEventListener(eventName, fn)
-                }
-                else if (node && node.forEach) {
-                  node.forEach((n) => {
-                    n.addEventListener(eventName, fn)
-                  })
-                }
-                else if (self.template && (node = self.template.querySelector(selector))) {
-                  node.addEventListener(eventName, fn)
-                }
-              }
-            })
-          })
-        })
-      }
-      else if (typeof el[pair] === "object") {
-        const selectors = split.join(" ")
-        Object.keys(el[pair]).forEach((evs) => {
-          const method = el[pair][evs]
-          if (typeof method === "string") {
-            evs.split(",").forEach((eventName) => {
-              selectors.split(",").forEach((selector) => {
-                let node
-                const fn = () => {
-                  const _args = [...arguments]
-                  _args.unshift(this)
-                  self[method].apply(self, _args)
-                }
-                if (eventName && (typeof self[method] === "function")) {
-                  if ((node = self.elements[selector]) instanceof HTMLElement) {
-                    node.addEventListener(eventName, fn)
-                  }
-                  else if (node && node.forEach) {
-                    node.forEach((n) => {
-                      n.addEventListener(eventName, fn)
-                    })
-                  }
-                  else if (self.template && (node = self.template.querySelector(selector))) {
-                    node.addEventListener(eventName, fn)
-                  }
-                }
-              })
-            })
-          }
-        })
-      }
+    Object.keys(el).forEach(key => {
+      const {selectors, eventnames} = events_keysplit(key)
+      parent_selectors.forEach(sel => selectors.push(sel))
+      parent_events.forEach(ev => eventnames.push(ev))
+      events(el[key], self, args, selectors, eventnames)
     })
   }
 }
+
+function events_keysplit (key) {
+  const split = key.split(/[\n\s]+/g)
+  const selectors = [], eventnames = []
+  split.forEach(el => {
+    if (el[0] === "@") {
+      eventnames.push(el.substr(1))
+    } else {
+      selectors.push(el)
+    }
+  })
+  return {
+    selectors: selectors.join(' ').split(/,/g).filter(n=>n.length),
+    eventnames: eventnames.join(',').split(/,+/g).filter(n=>n.length)
+  }
+}
+
+function events_gettargets(selectors, self) {
+  const targets = []
+
+  selectors.map(selector => {
+    if (Array.isArray(selector)) {
+      return events_gettargets(selector, self)
+    }
+    if (Array.isArray(self.elements[selector])) {
+      return self.elements[selector]
+    }
+    if (typeof selector === "string") {
+      return [...self.template.querySelectorAll(selector)]
+    }
+    if (selector instanceof HTMLElement) {
+      return selector
+    }
+  }).forEach(found => found.filter(el => el instanceof HTMLElement).forEach(target => targets.push(target)))
+
+  return targets
+}
+
 
 
 /**
@@ -130,40 +137,47 @@ function events (el, self, args) {
  *    A component can contain other components.
  */
 
-export default class Component {
+export default class Component extends EventTarget {
 
   /**
    * @method <constructor> build this object
-   * @param {HTMLElement|String|Function} container will contain this component
+   * @param {HTMLElement|string|function} container will contain this component
    * @param {*} arguments... are passed in template, elements and events functions
    * @return {Component} self
    */
 
   constructor () {
+    super()
+
     Object.defineProperty(this, "_builder", {
       "enumerable": false,
       "configurable": false,
       "value": {
+        container: this.container,
         template: this.template,
         elements: this.elements,
         events: this.events
       }
     })
 
-    Object.defineProperty(this, "__events__", {
-      "enumerable": false,
-      "configurable": false,
-      "value": {}
-    })
+
+    this.container = null
+    this.template = null
+    this.elements = []
+    this.events = {}
 
     this.setTemplate(...[null, ...arguments])
+
+    if (this._builder.container) {
+      this.setContainer(this._builder.container)
+    }
   }
 
 
   /**
    * @method <setTemplate> build the DOM of this Component, then list elements,
    *    finally link elements with events functions
-   * @param {HTMLElement|Function|String} dom is the HTML of this component
+   * @param {HTMLElement|function|string} dom is the HTML of this component
    * @param {*} arguments... are passed in template, elements and events functions
    * @return {Component} self
    */
@@ -182,7 +196,7 @@ export default class Component {
 
   /**
    * @method <setContainer> set first parameter as parent of this component
-   * @param {HTMLElement|String|Function} element will contain this component
+   * @param {HTMLElement|string|function} element will contain this component
    * @param {*} arguments... are passed in template, elements and events functions
    * @return {Component} self
    */
@@ -203,7 +217,7 @@ export default class Component {
 
   /**
    * @method <clearElement> clear an HTML element of this Component
-   * @param {String} name is the name of the HTML element
+   * @param {string} name is the name of the HTML element
    * @return {Component} self
    * @throws {Error} if the name does not match an element
    */
@@ -223,7 +237,7 @@ export default class Component {
 
   /**
    * @method <appendComponent> append a Component in this Component HTML element
-   * @param {String} name is the name of the HTML element
+   * @param {string} name is the name of the HTML element
    * @param {Component} component is the Component to append in the HTML element
    * @return {Component} self
    * @throws {Error} if the name does not match an element or if the component
@@ -250,7 +264,7 @@ export default class Component {
   /**
    * @method <fillComponent> set component as only child of HTML element of this
    *    by clearing then appending Component.
-   * @param {String} name is the name of the HTML element
+   * @param {string} name is the name of the HTML element
    * @param {Component} component is the Component to append in the HTML element
    * @return {Component} self
    * @throws {Error} if the name does not match an element or if the component
@@ -268,7 +282,7 @@ export default class Component {
    * @method <template> should be overriden and should return text in HTML
    *    format or an HTMLElement.
    * @param {*} arguments... are transfered from <constructor>
-   * @return {String|HTMLElement|function}
+   * @return {string|HTMLElement|function}
    */
 
   template () {
@@ -281,7 +295,7 @@ export default class Component {
    *    are the name, and the values are the selector in this component (not
    *    its children!).
    * @param {*} arguments... are transfered from <constructor>
-   * @return {Object|function}
+   * @return {object.<{array.<{HTMLElement}...>} selector>|function}
    * @warn this function does not select child components elements.
    */
 
@@ -291,11 +305,11 @@ export default class Component {
 
 
   /**
-   * @method <elements> should be overriden and should return object where keys
+   * @method <events> should be overriden and should return object where keys
    *    are the name spaced with event, and the values are the component methods
    *    to call when event is triggered (not its children!).
    * @param {*} arguments... are transfered from <constructor>
-   * @return {Object|function}
+   * @return {object.<{} selector_event>|function}
    */
 
   events () {
@@ -303,146 +317,9 @@ export default class Component {
   }
 
 
-  // EXTERNAL EVENTS
-
   /**
-   * @method <listen> listen an event ${eventName} happening and register the
-   *    function ${fn} to execute it when event happen.
-   * @param {string|Array} eventName
-   * @param {function|Array} fn
-   * @return {Component} self
+   * @method <container> should be overriden and should return an HTMLElement
+   *    which will contain this component's template.
+   *
    */
-
-  listen (eventName, fn) {
-    const self = this
-    if (typeof eventName === "string") {
-      const t = eventName.split(/[\n\s,]+/g)
-      if (t.length > 1) {
-        return this.listen([...t], fn)
-      }
-    }
-    else if (Array.isArray(eventName)) {
-      eventName.forEach((ev) => {
-        self.listen(ev, fn)
-      })
-      return this
-    }
-    if (Array.isArray(fn)) {
-      fn.forEach((f) => {
-        self.listen(eventName, f)
-      })
-      return this
-    }
-
-    if (typeof fn === "function") {
-      const evs = this["__events__"]
-      if (!Array.isArray(evs[eventName])) {
-        evs[eventName] = []
-      }
-      evs[eventName].push(fn)
-    }
-    return this
-  }
-
-
-  /**
-   * @method <dispatch> trigger an event ${eventName} happening and execute the
-   *    registered functions.
-   * @param {string|Array} eventName
-   * @param {function} args
-   * @return {Component} self
-   */
-
-  dispatch (eventName, args) {
-    const self = this
-    if (typeof eventName === "string") {
-      const t = eventName.split(/[\n\s,]+/g)
-      if (t.length > 1) {
-        return this.listen([...t], args)
-      }
-    }
-    else if (Array.isArray(eventName)) {
-      eventName.forEach((ev) => {
-        self.listen(ev, args)
-      })
-      return this
-    }
-
-    const evs = this["__events__"]
-    if (!Array.isArray(evs[eventName])) {
-      evs[eventName] = []
-    }
-    evs[eventName].forEach((fn) => {
-      if (Array.isArray(args)) {
-        fn.apply(null, args)
-      }
-      else {
-        fn()
-      }
-    })
-    return this
-  }
-
-
-  /**
-   * @method <detach> remove the registered function ${fn} listened by event
-   *    ${eventName}, or all of its functions if ${fn} is undefined
-   * @param {string|Array} eventName
-   * @param {function|Array} fn
-   * @return {Component} self
-   */
-
-  detach (eventName, fn) {
-    const self = this
-    if (typeof eventName === "string") {
-      const t = eventName.split(/[\n\s,]+/g)
-      if (t.length > 1) {
-        return this.listen([...t], fn)
-      }
-    }
-    else if (Array.isArray(eventName)) {
-      eventName.forEach((ev) => {
-        self.listen(ev, fn)
-      })
-      return this
-    }
-    if (Array.isArray(fn)) {
-      fn.forEach((f) => {
-        self.listen(eventName, f)
-      })
-      return this
-    }
-
-    const evs = this["__events__"]
-    if (!Array.isArray(evs[eventName])) {
-      evs[eventName] = []
-    }
-    if (fn === undefined) {
-      evs[eventName] = []
-    }
-    else {
-      evs[eventName] = evs[eventName].slice(evs[eventName].indexOf(fn))
-    }
-    return this
-  }
-
-
-  /**
-   * @method <listenOnce> listen event ${eventName} happening for executing
-   *    function ${fn} only one time.
-   * @param {string|Array} eventName
-   * @param {function|Array} fn
-   * @return {Component} self
-   */
-
-  listenOnce (eventName, fn) {
-    const self = this,
-      del = () => {
-        self.detach(eventName, fn)
-        self.detach(eventName, del)
-      }
-    this.listen(eventName, fn)
-    this.listen(eventName, del)
-    return this
-  }
 }

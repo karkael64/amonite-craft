@@ -16,7 +16,7 @@ export default class Action extends Component {
 
   events () {
     return {
-      "button click": "click"
+      "button @click": "click"
     }
   }
 

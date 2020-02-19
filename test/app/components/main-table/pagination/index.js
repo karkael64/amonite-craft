@@ -26,10 +26,10 @@ export default class Pagination extends Component {
 
   events () {
     return {
-      "first click": "callFirst",
-      "prev click": "callPrevious",
-      "next click": "callNext",
-      "last click": "callLast"
+      "first @click": "callFirst",
+      "prev @click": "callPrevious",
+      "next @click": "callNext",
+      "last @click": "callLast"
     }
   }
 

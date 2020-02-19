@@ -22,11 +22,11 @@ export default class Input extends Component {
 
   events () {
     return {
-      "input focus": "hideErrors",
-      "input change": "verifyErrors",
-      "input input": "showIcons",
-      "removeContent click": "removeContent",
-      "showPassword click": "showPassword"
+      "input @focus": "hideErrors",
+      "input @change": "verifyErrors",
+      "input @input": "showIcons",
+      "removeContent @click": "removeContent",
+      "showPassword @click": "showPassword"
     }
   }
 
