@@ -2,15 +2,18 @@ const fs = require('fs');
 const babelStream = require('./stream/babel')
 const { src, concat } = require('./stream')
 
-const path = require('path')
-const file = path.resolve('./amonite-craft.js')
+function prod(then, config) {
+  if (!config.scriptEntry) {
+    throw new Error("Please set config scriptEntry")
+  }
+  if (!config.scriptOutput) {
+    throw new Error("Please set config scriptOutput")
+  }
 
-
-function prod(then) {
-  console.log(`Create script file at:\t${file}`);
-  return src('./builder/factory/windowed.js')
-    .pipe(babelStream({presets: ['@babel/env', 'minify'], comments: false}))
-    .pipe(concat(file))
+  console.log(`Create script file at:\t${config.scriptOutput}`);
+  return src(config.scriptEntry)
+    .pipe(babelStream(config.babelConfig))
+    .pipe(concat(config.scriptOutput))
     .on('end', () => {
       console.log(`Script file created`)
       then()

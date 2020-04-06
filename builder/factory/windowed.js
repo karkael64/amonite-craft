@@ -1,2 +1,2 @@
-import Amonite from "../../index";
+import Amonite from "../../module";
 window.Amonite = Amonite;

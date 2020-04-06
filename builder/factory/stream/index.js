@@ -3,21 +3,22 @@ const map = require("./map")
 const src = require("./src")
 const watch = require("./watch")
 
-function serie (end) {
+function serie () {
   const list = [...arguments]
 
-  return function (then) {
+  return function (then, config) {
     function next () {
-      if (!list.length) {
-        return end()
+      if (!list.length && then) {
+        return then()
       }
       
       const fn = list.shift()
       if (fn.length) {
-        return fn(next)
+        return fn(next, config)
       }
       else {
-        throw new Error("Function should have a callback")
+        fn()
+        next()
       }
     }
 
@@ -25,11 +26,11 @@ function serie (end) {
   }
 }
 
-function parallel (then) {
+function parallel () {
   const list = [...arguments]
   var len = arguments.length
 
-  return function (then) {
+  return function (then, config) {
     function end() {
       len--
       if (!len) then()
@@ -38,10 +39,11 @@ function parallel (then) {
     while (list.length) {
       const fn = list.shift()
       if (fn.length) {
-        fn(end)
+        fn(end, config)
       }
       else {
-        throw new Error("Function should have a callback")
+        fn()
+        end()
       }
     }
   }

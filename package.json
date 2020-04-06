@@ -8,7 +8,7 @@
     "website"
   ],
   "main": "index.js",
-  "module": "index.js",
+  "module": "module.js",
   "browser": "amonite-craft.js",
   "files": [
     "index.js",
@@ -18,7 +18,8 @@
     "README.md"
   ],
   "scripts": {
-    "browser": "node builder/prod",
+    "browser": "node builder/browsered",
+    "require": "node builder/required",
     "test": "node builder/dev",
     "unit": "cd test && node run"
   },

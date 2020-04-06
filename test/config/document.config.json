@@ -1,6 +1,0 @@
-{
-  "design": "./design.css",
-  "run": "./run.js",
-  "page": "./index.html",
-  "fonts": "./fonts"
-}

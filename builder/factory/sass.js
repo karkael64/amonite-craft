@@ -2,29 +2,42 @@ const { src, concat, watch, map } = require("./stream")
 const sassStream = require("./stream/sass")
 
 const path = require("path")
-const documentConfig = require("../../test/config/document.config.json")
-const file = path.resolve("./build", documentConfig.design)
 
-function sass (then) {
+function sass (then, config) {
+  if (!config.styleEntry) {
+    throw new Error('Please set config styleEntry')
+  }
+  if (!config.styleOutput) {
+    throw new Error('Please set config styleOutput')
+  }
+  const styleOutput = path.resolve(config.localServer.folder, config.styleOutput)
+
   console.log(`Create style file…`)
-  return src("./test/app/main/index.scss")
+  return src(config.styleEntry)
     .pipe(sassStream())
-    .pipe(concat(file))
+    .pipe(concat(styleOutput))
     .on("finish", () => {
-      console.log(`Style file created at:\t${file}`)
+      console.log(`Style file created at \t${styleOutput}`)
       if (then) then()
-    })
+    })  
 }
 
-function reloadSass(then) {
-  return src("./test/app")
+function reloadSass (then, config) {
+  if (!config.styleListen) {
+    throw new Error('Please set config styleListen')
+  }
+
+  return src(config.styleListen)
     .pipe(map((file, callback) => {
       console.log(`Watch style files at:\t${file}`)
       callback(null, file)
     }))
     .pipe(watch((eventname, filename) => {
       const ext = path.extname(filename)
-      if (ext === ".scss") sass()
+      if (ext === ".scss") {
+        console.log(`File triggered ${eventname} at \t${file}`)
+        sass()
+      }
     }))
     .on("finish", then)
 }
