@@ -48,11 +48,12 @@ function onload () {
   mo.observe(document.querySelector("html"), cnf)
 }
 
-window.addEventListener("load", onload)
-if (window.document.readyState === "complete") {
-  onload()
-}
-
+try {
+  window.addEventListener("load", onload)
+  if (window.document.readyState === "complete") {
+    onload()
+  }  
+} catch (e) {}
 
 const DEFINES = {}
 const DEFINED = []

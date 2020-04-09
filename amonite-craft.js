@@ -1,4 +1,12 @@
-var req=(function(e,f){function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}; return r({"":e})("")})(0, [[{"./libs/layout/event-target":1,"./libs/layout/component":2,"./libs/layout/section":3,"./libs/layout/page":4,"./libs/layout/define":5,"./libs/request/ajax":6,"./libs/request/resource":7,"./libs/router/router":8,"./libs/router/route":9},function (require,module,exports) {
+(function(e,f){function r(x){return function(p){var i=x[p];if(f[i][2])return f[i][2].exports;var o={},m={exports:o},[s,h]=f[i];f[i][2]=m;h.call(o,r(s),m,o);return m.exports}}; return r({"":e})("")})(0, [[{"../../../module":1},function (require,module,exports) {
+"use strict";
+
+var _module = _interopRequireDefault(require("../../../module"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+window.Amonite = _module["default"];
+}],[{"./libs/layout/event-target":2,"./libs/layout/component":3,"./libs/layout/section":4,"./libs/layout/page":5,"./libs/layout/define":6,"./libs/request/ajax":7,"./libs/request/resource":8,"./libs/router/router":9,"./libs/router/route":10},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -287,7 +295,7 @@ var EventTarget = function () {
 }();
 
 exports["default"] = EventTarget;
-}],[{"./event-target":1},function (require,module,exports) {
+}],[{"./event-target":2},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -617,7 +625,7 @@ var Component = function (_EventTarget) {
 }(_eventTarget["default"]);
 
 exports["default"] = Component;
-}],[{"./component":2,"./page":4},function (require,module,exports) {
+}],[{"./page":5,"./component":3},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -704,7 +712,7 @@ var Section = function (_Component) {
 }(_component["default"]);
 
 exports["default"] = Section;
-}],[{"./component":2,"./section":3},function (require,module,exports) {
+}],[{"./component":3,"./section":4},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1024,7 +1032,7 @@ function tryExec(fn, def, args) {
 
   return def;
 }
-}],[{"./ajax":6},function (require,module,exports) {
+}],[{"./ajax":7},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1136,7 +1144,7 @@ var Resource = function () {
 }();
 
 exports.Resource = exports["default"] = Resource;
-}],[{"./route":9},function (require,module,exports) {
+}],[{"./route":10},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1261,7 +1269,7 @@ function popstate() {
     defaultController();
   }
 }
-}],[{"./chunk":10},function (require,module,exports) {
+}],[{"./chunk":11},function (require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1818,4 +1826,3 @@ var Chunk = function () {
 var _default = Chunk;
 exports["default"] = _default;
 }]]);
-module.exports=req['default'];
