@@ -1,16 +1,16 @@
-const path = require("path")
+const path = require('path')
 
-const { src, concat, watch, map } = require("./stream")
-const babelStream = require("./stream/babel")
+const { src, concat, watch, map } = require('./stream')
+const babelStream = require('./stream/babel')
 
 
 function babel(then, config) {
   
   if (!config.scriptEntry) {
-    throw new Error("Please set config scriptEntry")
+    throw new Error('Please set config scriptEntry')
   }
   if (!config.scriptOutput) {
-    throw new Error("Please set config scriptOutput")
+    throw new Error('Please set config scriptOutput')
   }
   const scriptOutput = path.resolve(config.localServer.folder, config.scriptOutput)
   
@@ -18,7 +18,7 @@ function babel(then, config) {
   return src(config.scriptEntry)
     .pipe(babelStream(config.babelConfig))
     .pipe(concat(scriptOutput))
-    .on("finish", () => {
+    .on('finish', () => {
       console.log(`Script file created at:\t${scriptOutput}`)
       if (then) then()
     })
@@ -27,9 +27,9 @@ function babel(then, config) {
 
 function reloadBabel(then, config) {
   if (!config.scriptListen) {
-    throw new Error("Please set config scriptListen")
+    throw new Error('Please set config scriptListen')
   }
-  const extensions = config.scriptExtensions || [".js"]
+  const extensions = config.scriptExtensions || ['.js']
 
   return src(config.scriptListen)
     .pipe(map((file, callback) => {
@@ -43,7 +43,7 @@ function reloadBabel(then, config) {
         babel(config)
       }
     }))
-    .on("finish", then)
+    .on('finish', then)
 }
 
 

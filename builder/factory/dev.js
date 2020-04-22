@@ -1,9 +1,9 @@
-const { serie, parallel } = require("./stream")
+const { serie, parallel } = require('./stream')
 
-const { html } = require("./document")
-const { babel, reloadBabel } = require("./babel")
-const { sass, reloadSass } = require("./sass")
-const { local, stub } = require("./servers")
+const { html } = require('./document')
+const { babel, reloadBabel } = require('./babel')
+const { sass, reloadSass } = require('./sass')
+const { local, stub } = require('./servers')
 
 const build = parallel(babel, sass, html)
 const servers = parallel(local, stub)

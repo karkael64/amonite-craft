@@ -4,10 +4,10 @@ const { src, concat, map } = require('./stream')
 
 function prod(then, config) {
   if (!config.scriptEntry) {
-    throw new Error("Please set config scriptEntry")
+    throw new Error('Please set config scriptEntry')
   }
   if (!config.scriptOutput) {
-    throw new Error("Please set config scriptOutput")
+    throw new Error('Please set config scriptOutput')
   }
 
   console.log(`Create script file at:\t${config.scriptOutput}`);

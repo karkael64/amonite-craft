@@ -1,9 +1,9 @@
-const { Transform } = require("stream")
-const fs = require("fs")
+const { Transform } = require('stream')
+const fs = require('fs')
 
 class Concat extends Transform {
   constructor(filepath, opts) {
-    if (typeof filepath === "object") opts = filepath;
+    if (typeof filepath === 'object') opts = filepath;
     super(opts)
     this._data = [];
     this._filepath = filepath;

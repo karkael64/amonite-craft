@@ -1,7 +1,7 @@
-const exec = require("child_process").exec
-const stream = require("stream")
-const path = require("path")
-const fs = require("fs")
+const exec = require('child_process').exec
+const stream = require('stream')
+const path = require('path')
+const fs = require('fs')
 
 class SrcStream extends stream.Transform {
   constructor () {
@@ -32,13 +32,13 @@ async function readdir (dir) {
     const cmd = `find ${dir} -type f`
     exec(cmd, function (err, stdout, stderr) {
       if (err) return reject(err)
-      if (stdout) return resolve(stdout.split("\n").filter((file) => file.length))
+      if (stdout) return resolve(stdout.split('\n').filter((file) => file.length))
       if (stderr) return reject(new Error(`Command "${cmd}" has thrown an error`))
     })
   })
 }
 
-async function findFiles (matcher, into = "") {
+async function findFiles (matcher, into = '') {
   into = path.resolve(process.cwd(), into)
 
   if (Array.isArray(matcher)) {
@@ -47,10 +47,10 @@ async function findFiles (matcher, into = "") {
     }))).flat()
   }
 
-  if (typeof matcher === "string") return [path.resolve(into, matcher)]
-  if (typeof matcher === "function") return await findFilesByFunction(matcher, into)
+  if (typeof matcher === 'string') return [path.resolve(into, matcher)]
+  if (typeof matcher === 'function') return await findFilesByFunction(matcher, into)
   if (matcher instanceof RegExp) return await findFilesByRegExp(matcher, into)
-  throw new Error("First parameter should be a RegExp or a function")
+  throw new Error('First parameter should be a RegExp or a function')
 }
 
 async function findFilesByRegExp (matcher, into) {

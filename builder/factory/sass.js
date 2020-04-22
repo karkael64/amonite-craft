@@ -1,7 +1,7 @@
-const { src, concat, watch, map } = require("./stream")
-const sassStream = require("./stream/sass")
+const { src, concat, watch, map } = require('./stream')
+const sassStream = require('./stream/sass')
 
-const path = require("path")
+const path = require('path')
 
 function sass (then, config) {
   if (!config.styleEntry) {
@@ -16,7 +16,7 @@ function sass (then, config) {
   return src(config.styleEntry)
     .pipe(sassStream())
     .pipe(concat(styleOutput))
-    .on("finish", () => {
+    .on('finish', () => {
       console.log(`Style file created at \t${styleOutput}`)
       if (then) then()
     })  
@@ -34,12 +34,12 @@ function reloadSass (then, config) {
     }))
     .pipe(watch((eventname, filename) => {
       const ext = path.extname(filename)
-      if (ext === ".scss") {
+      if (ext === '.scss') {
         console.log(`File triggered ${eventname} at \t${file}`)
         sass()
       }
     }))
-    .on("finish", then)
+    .on('finish', then)
 }
 
 exports.sass = sass

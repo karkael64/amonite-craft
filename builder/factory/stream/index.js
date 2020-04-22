@@ -1,7 +1,7 @@
-const concat = require("./concat")
-const map = require("./map")
-const src = require("./src")
-const watch = require("./watch")
+const concat = require('./concat')
+const map = require('./map')
+const src = require('./src')
+const watch = require('./watch')
 
 function serie () {
   const list = [...arguments]

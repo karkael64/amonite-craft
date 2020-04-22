@@ -1,2 +1,2 @@
-import Amonite from "../../../module";
+import Amonite from '../../../module';
 export default Amonite;

@@ -1,4 +1,4 @@
-const Express = require("express")
+const Express = require('express')
 
 function local (then, config) {
   

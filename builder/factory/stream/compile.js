@@ -1,5 +1,5 @@
-const fs = require("fs")
-const map = require("./map")
+const fs = require('fs')
+const map = require('./map')
 
 function compile(options) {
   if (!(typeof options === 'object')) options = {}

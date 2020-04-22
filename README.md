@@ -58,6 +58,13 @@ You can add this package with `npm install amonite-craft`.
 
 You can copy here the folder `builder/gulp` and its entry point `builder/gulp.js` to get a working Gulp streaming build system.
 
+Then install gulp:
+
+```sh
+npm install -g gulp
+npm install --save-dev gulp-concat gulp-connect gulp-iconfont \
+    gulp-iconfont-css gulp-sass gulp-sourcemaps
+```
 
 ### Custom streaming build system
 
@@ -73,7 +80,7 @@ You can copy here the folder `builder/factory` and its entry points `builder/dev
 
 Amonite contains a router and a page builder, you can register manually the page container and URL hash changes, or initialize it with `Amonite.initAll()`.
 
-``` js
+```js
 const Amonite = window.Amonite // or
 import Amonite from "amonite-craft" // or
 const Amonite = require("amonite-craft") // please note library files uses "import" keyword
@@ -114,7 +121,7 @@ prospecting, informative and statistic are Sections).
 You can create a Page, a Section or a Component as easy as this (here 1 page, 2
 sections):
 
-``` js
+```js
 //  pages have same structure
 class MarketPage extends Amonite.Page {
   template () {
@@ -164,7 +171,7 @@ The webapp can have many routes in many routers, there is no problem. Just keep
 in mind there is just one controller when no other route match (it could be a
 404 error?).
 
-``` js
+```js
 function atFirstCallOnly() {
   // helps to prepare a page or a section, for example
   // ...
@@ -197,7 +204,7 @@ section's page, then the page is also replaced!).
 
 There is three common ways to send an AJAX request: with collection/model system, with resource/promise system, or with AJAX self configuration. You can use each of them, but they are not developed to be mixed with each others. I prefer resource/promise system :
 
-``` js
+```js
 import { Resource } from "amonite-craft"
 
 class MarketItemRequest extends Resource {
@@ -241,10 +248,10 @@ Following [Mozilla recommendations for HTML Custom Elements](https://developer.m
 ```js
 import { define, CustomHTMLElement } from "amonite-craft"
 
-class PopupInfoHTMLElement extends CustomHTMLElement () {
+class PopupInfoHTMLElement extends CustomHTMLElement {
   constructor (node) {
     super()
-    this.addEventListener("load", this.load.bind(this))
+    node.addEventListener("load", this.load.bind(this))
   }
 
   load () {

@@ -1,5 +1,5 @@
-const { src, concat } = require("./stream")
-const compile = require("./stream/compile")
+const { src, concat } = require('./stream')
+const compile = require('./stream/compile')
 
 const path = require('path')
 
@@ -16,7 +16,7 @@ function document(then, config) {
   return src(config.templateEntry)
     .pipe(compile(config))
     .pipe(concat(templateOutput))
-    .on("finish", () => {
+    .on('finish', () => {
       console.log(`Html file created at:\t${config.templateOutput}`)
       if (then) then()
     })  

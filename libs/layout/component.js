@@ -48,7 +48,7 @@ function elements (el, self, args) {
         result[name] = [...into.querySelectorAll(el[name])]
       }
       else if (Array.isArray(el[name])) {
-        result[name] = el[name]
+        result[name] = el[name].filter(item => item instanceof HTMLElement)
       }
     })
     return result
@@ -292,7 +292,7 @@ export default class Component extends EventTarget {
 
   /**
    * @method <elements> should be overriden and should return object where keys
-   *    are the name, and the values are the selector in this component (not
+   *    are the name, and the values are the selector in THIS component (not
    *    its children!).
    * @param {*} arguments... are transfered from <constructor>
    * @return {object.<{array.<{HTMLElement}...>} selector>|function}

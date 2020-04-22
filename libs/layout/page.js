@@ -28,6 +28,22 @@ export default class Page extends Component {
 
 
   /**
+   * @method <elements> by default return only 'section', but it can be
+   *    overriden and should return object where keys are the name, and
+   *    the values are the selector in THIS component (not its children!).
+   * @param {*} arguments... are transfered from <constructor>
+   * @return {object.<{array.<{HTMLElement}...>} selector>|function}
+   * @warn this function does not select child components elements.
+   */
+
+  elements () {
+    return {
+      'section': 'section,.section'
+    }
+  }
+
+
+  /**
    * @method <setSection> fill this page with a Section
    * @param {Section} section
    * @return {Page} self

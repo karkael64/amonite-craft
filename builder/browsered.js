@@ -1,5 +1,5 @@
 const path = require('path')
-const { prod } = require("./factory/prod-browser");
+const { prod } = require('./factory/prod-browser');
 
 prod(() => {}, {
     scriptEntry: path.resolve(__dirname, 'factory/templates/browsered.js'),

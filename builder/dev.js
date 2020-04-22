@@ -1,5 +1,5 @@
-const { dev } = require("./factory/dev");
-const expressRoute = require("../test/stub/api")
+const { dev } = require('./factory/dev');
+const expressRoute = require('../test/stub/api')
 
 dev(() => {
     console.log('Ready!');

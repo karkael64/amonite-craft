@@ -1,5 +1,5 @@
-const map = require("./map")
-const babelUnifyer = require("babel-unifyer")
+const map = require('./map')
+const babelUnifyer = require('babel-unifyer')
 
 function babel(config) {
   if (!(typeof config === 'object')) config = {}
