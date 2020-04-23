@@ -1,12 +1,8 @@
 # Amonite-Craft
 
-Amonite is a Web Front JavaScript library that let's you improving your
-Craftmanship skills. It means _you don't have to use a framework which limit
-developer skills_, you just have to call the tool you need when you want: show
-a page, show a section of your page, create HTML custom elements, listen browser and route user, create endpoint with back-end API.
+Amonite is a Web Front JavaScript library that let's you improving your Craftmanship skills. It means _you don't have to use a framework which limit developer skills_, you just have to call the tool you need when you want: show a page, show a section of your page, create HTML custom elements, listen browser and route user, create endpoint with back-end API.
 
-Your application goal is reached by you, the developer: welcome to the Craftmanship
-world!
+Your application goal is reached by you, the developer: welcome to the Craftmanship world!
 
 
 ## Table of Contents
@@ -16,6 +12,7 @@ world!
     2. [Import sources](#import-sources)
     3. [Browserify with Gulp](#browserify-with-gulp)
     4. [Custom streaming build system](#custom-streaming-build-system)
+    5. [Start](#start)
 2. [Amonite-Craft contents](#amonite-craft-contents)
     1. [Components](#components)
     2. [Routes](#routes)
@@ -26,6 +23,13 @@ world!
 
 
 ## Installation
+
+### NPM
+
+```sh
+npm install amonite-craft
+```
+
 ### Install in your browser as a library
 
 You can load files directly in your window by adding this file in your script: `/amonite-craft.js`, then you can insert it in your HTML file like this :
@@ -44,27 +48,24 @@ You can load files directly in your window by adding this file in your script: `
 ```
 
 
-### Import sources
-
-Needs:
-* NodeJS v11,
-* ECMAScript6 syntax and
-* `import` keyword for package management.
-
-You can add this package with `npm install amonite-craft`.
-
-
 ### Browserify with Gulp
 
 You can copy here the folder `builder/gulp` and its entry point `builder/gulp.js` to get a working Gulp streaming build system.
 
-Then install gulp:
+Install gulp:
 
 ```sh
 npm install -g gulp
-npm install --save-dev gulp-concat gulp-connect gulp-iconfont \
-    gulp-iconfont-css gulp-sass gulp-sourcemaps
+npm install gulp-concat gulp-connect gulp-iconfont \
+    gulp-iconfont-css gulp-sass gulp-sourcemaps express
 ```
+
+Run gulp:
+
+```sh
+cd builder && gulp
+```
+
 
 ### Custom streaming build system
 
@@ -73,17 +74,49 @@ In order to improve systems and do custom unit tests, I use my own `babel-unifye
 * [babel-unifyer](https://github.com/karkael64/babel-unifyer)
 * [base-test-files](https://github.com/karkael64/base-test-files)
 
-You can copy here the folder `builder/factory` and its entry points `builder/dev.js` and `builder/prod.js` to get a working & lightweight & customizable streaming build system.
+Install babel-unifyer:
+
+Copy here the folder `builder/factory` and its entry points `builder/dev.js` and `builder/prod.js` to get a working & lightweight & customizable streaming build system.
+
+```sh
+npm install babel-unifyer express node-watch node-sass
+```
+
+Run:
+
+```sh
+node builder/dev.js
+```
 
 
 ### Start
 
 Amonite contains a router and a page builder, you can register manually the page container and URL hash changes, or initialize it with `Amonite.initAll()`.
 
+HTML page:
+
+```html
+<html>
+  <body>
+    <script src="/scripts/amonite-craft.js"></script>
+    <script>
+      const Amonite = window.Amonite
+
+      Amonite.initAll() // or
+      Amonite.init(() => {
+        Amonite.Page.setContainer(document.body)
+        Amonite.Router.listenPopstate()
+      })
+    </script>
+  </body>
+</html>
+```
+
+Streaming build system:
+
 ```js
-const Amonite = window.Amonite // or
 import Amonite from "amonite-craft" // or
-const Amonite = require("amonite-craft") // please note library files uses "import" keyword
+const Amonite = require("amonite-craft")
 
 Amonite.initAll() // or
 Amonite.init(() => {
@@ -92,13 +125,10 @@ Amonite.init(() => {
 })
 ```
 
-Callback `cb` is called in code `init(cb)` when window is loaded, or the
-callback is called in code `initAll(cb)` when Page container is set by default
-on `document.body` and the Router start listening registered routes.
+* Callback `cb` is called in code `init(cb)` when window is loaded.
+* Callback `cb` is called in code `initAll(cb)` when window is loaded, Page container is set by default on `document.body` and the Router start listening registered routes.
 
-If you want to load a section with a route when the user has loaded his window,
-then you should first register components, sections, pages and routes before
-calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
+If you want to load a section with a route when the user has loaded his window, then you should first register components, sections, pages and routes before calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
 
 
 ## Amonite-Craft contents
@@ -107,16 +137,11 @@ calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
 
 * A `Component` is a defined HTML node with a template, methods, events scoped.
 * A `Section` is a component which fill a page: there is only one section in a page.
-* A `Page` is the component structuring HTML document inserted in body: there is
-only one page opened at time and only one section in the page.
+* A `Page` is the component structuring HTML document inserted in body: there is only one page opened at time and only one section in the page.
 
 For examples:
-1. A very simple page with few information like a login, sign in or logout
-would expect the same light design (where light design is set by Page and where
-login, sign up and logout are Sections);
-2. A commercial prospecting page, an informative page or a statistic page
-would expect the same heavy design (where heavy design is set by Page and where
-prospecting, informative and statistic are Sections).
+1. A very simple page with few information like a login, sign in or logout would expect the same light design (where light design is set by Page and where login, sign up and logout are Sections);
+2. A commercial prospecting page, an informative page or a statistic page would expect the same heavy design (where heavy design is set by Page and where prospecting, informative and statistic are Sections).
 
 You can create a Page, a Section or a Component as easy as this (here 1 page, 2
 sections):
@@ -167,9 +192,7 @@ class MarketItemSection extends MarketSection {
 
 ### Routes
 
-The webapp can have many routes in many routers, there is no problem. Just keep
-in mind there is just one controller when no other route match (it could be a
-404 error?).
+The webapp can have many routes in many routers, there is no problem. Just keep in mind there is just one controller when no other route match (it could be a 404 error?).
 
 ```js
 function atFirstCallOnly() {
@@ -192,12 +215,8 @@ Router.setDefault(error404)
 ```
 
 In this example :
-* The function `atFirstCallOnly()` is called one time in all the
-window session. You can use it if you want to improve your website performance
-and do the necessary actions before showing page and section.
-* The function `Section.prototype.setSection()` replaces the current section
-with this section (important: if the current page is different than this
-section's page, then the page is also replaced!).
+* The function `atFirstCallOnly()` is called one time in all the window session. You can use it if you want to improve your website performance and do the necessary actions before showing page and section.
+* The function `Section.prototype.setSection()` replaces the current section by this section (important: if the current page is different than this section's page, then the page is also replaced!).
 * The function `router.add("route", function exec(args) {})` create a route registered in this router. In the above section, the route `list` matches when URL path is `/market` or `/market/` (last slash is optional), and the route `item` matches when URL path is `/market/item/123aze` (or anything else than "123aze"). The arguments `args` are extracted from URL (ie: `["", "item", {value: "123aze", type: "integer"}]`).
 
 ### API requests
@@ -232,8 +251,8 @@ class MarketItemRequest extends Resource {
 
   updateItem (data) {
     const item = this.items.find((i) => i.id === data.id)
-    if (!item) this.items.push(item = {})
-    Object.assign(item, data)
+    if (!item) this.items.push(data)
+    else Object.assign(item, data)
   }
 }
 
@@ -261,7 +280,7 @@ class PopupInfoHTMLElement extends CustomHTMLElement {
 define("popup-info", PopupInfoHTMLElement)
 ```
 
-Then just insert HTML element in your template
+Then just insert HTML element in your template:
 
 ```html
 <html>
@@ -271,7 +290,7 @@ Then just insert HTML element in your template
 </html>
 ```
 
-Or with JavaScript common functions
+Or with JavaScript common functions:
 
 ```js
 document.body.appendChild(document.createElement("popup-info"))
