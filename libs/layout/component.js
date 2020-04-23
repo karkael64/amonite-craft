@@ -149,14 +149,14 @@ export default class Component extends EventTarget {
   constructor () {
     super()
 
-    Object.defineProperty(this, "_builder", {
+    Object.defineProperty(this, "__builder__", {
       "enumerable": false,
       "configurable": false,
       "value": {
-        container: this.container,
-        template: this.template,
-        elements: this.elements,
-        events: this.events
+        container: this.container.bind(this),
+        template: this.template.bind(this),
+        elements: this.elements.bind(this),
+        events: this.events.bind(this)
       }
     })
 
@@ -166,10 +166,11 @@ export default class Component extends EventTarget {
     this.elements = []
     this.events = {}
 
-    this.setTemplate(...[null, ...arguments])
+    this.setTemplate(null, ...arguments)
 
-    if (this._builder.container) {
-      this.setContainer(this._builder.container)
+    const cont = this.__builder__.container(...arguments)
+    if (cont) {
+      this.setContainer(cont, ...arguments)
     }
   }
 
@@ -182,13 +183,12 @@ export default class Component extends EventTarget {
    * @return {Component} self
    */
 
-  setTemplate () {
-    const [dom, ...args] = [...arguments],
-      tpl = template(dom || this._builder.template, this, args)
+  setTemplate (dom, ...args) {
+    const tpl = template(dom || this.__builder__.template, this, args)
     if (tpl instanceof HTMLElement) {
       this.template = tpl
-      this.elements = elements(this._builder.elements, this, args)
-      events(this._builder.events, this, args)
+      this.elements = elements(this.__builder__.elements, this, args)
+      events(this.__builder__.events, this, args)
     }
     return this
   }
@@ -201,8 +201,8 @@ export default class Component extends EventTarget {
    * @return {Component} self
    */
 
-  setContainer (element) {
-    const cont = container(element, this, arguments)
+  setContainer (element, ...args) {
+    const cont = container(element, this, args)
     if (cont instanceof HTMLElement) {
       this.container = cont
       if (this.template instanceof HTMLElement) {
@@ -279,6 +279,18 @@ export default class Component extends EventTarget {
   // TEMPLATE BUILDERS
 
   /**
+   * @method <container> should be overriden and should return an HTMLElement
+   *    which will contain this component's template.
+   * @param {*} arguments... are transfered from <constructor>
+   * @return {string|HTMLElement|function}
+   */
+
+   container () {
+    return null
+  }
+
+
+  /**
    * @method <template> should be overriden and should return text in HTML
    *    format or an HTMLElement.
    * @param {*} arguments... are transfered from <constructor>
@@ -295,7 +307,7 @@ export default class Component extends EventTarget {
    *    are the name, and the values are the selector in THIS component (not
    *    its children!).
    * @param {*} arguments... are transfered from <constructor>
-   * @return {object.<{array.<{HTMLElement}...>} selector>|function}
+   * @return {object.{}>|function}
    * @warn this function does not select child components elements.
    */
 
@@ -309,17 +321,10 @@ export default class Component extends EventTarget {
    *    are the name spaced with event, and the values are the component methods
    *    to call when event is triggered (not its children!).
    * @param {*} arguments... are transfered from <constructor>
-   * @return {object.<{} selector_event>|function}
+   * @return {object.{}|function}
    */
 
   events () {
     return {}
   }
-
-
-  /**
-   * @method <container> should be overriden and should return an HTMLElement
-   *    which will contain this component's template.
-   *
-   */
 }

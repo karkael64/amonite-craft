@@ -40,7 +40,7 @@ function reloadBabel(then, config) {
       const ext = path.extname(file)
       if (extensions.indexOf(ext) !== -1) {
         console.log(`File triggered ${eventname} at \t${file}`)
-        babel(config)
+        babel(null, config)
       }
     }))
     .on('finish', then)

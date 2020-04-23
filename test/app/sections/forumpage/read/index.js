@@ -1,4 +1,4 @@
-import Amonite from "../../../../../"
+import Amonite from "../../../../../module"
 import Topic from "./topic"
 import ForumRequest from "../../../requests/forums/forum"
 import template from "./template.html"

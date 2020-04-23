@@ -3,7 +3,7 @@ import Input from "../../components/input"
 import Action from "../../components/action"
 import template from "./template.html"
 import "./routes"
-import { Router } from "../../../../"
+import { Router } from "../../../../module"
 
 export default class IndexSection extends Section {
   template () {

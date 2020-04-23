@@ -20,10 +20,21 @@ export default class Page extends Component {
    */
 
   constructor () {
-    super(Page.container)
+    super()
     this.template.setAttribute("page", this.template.getAttribute("component"))
     this.template.removeAttribute("component")
     Page.instances[this.constructor.name] = this
+  }
+
+  /**
+   * @method <template> by default return only <section>, but it can be 
+   *    overriden and should return text in HTML format or an HTMLElement.
+   * @param {*} arguments... are transfered from <constructor>
+   * @return {string|HTMLElement|function}
+   */
+
+  template () {
+    return "<section></section>"
   }
 
 
@@ -32,7 +43,7 @@ export default class Page extends Component {
    *    overriden and should return object where keys are the name, and
    *    the values are the selector in THIS component (not its children!).
    * @param {*} arguments... are transfered from <constructor>
-   * @return {object.<{array.<{HTMLElement}...>} selector>|function}
+   * @return {object.{}|function}
    * @warn this function does not select child components elements.
    */
 

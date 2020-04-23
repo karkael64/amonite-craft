@@ -393,7 +393,9 @@ function elements(el, self, args) {
       if (typeof el[name] === "string") {
         result[name] = _toConsumableArray(into.querySelectorAll(el[name]));
       } else if (Array.isArray(el[name])) {
-        result[name] = el[name];
+        result[name] = el[name].filter(function (item) {
+          return item instanceof HTMLElement;
+        });
       }
     });
     return result;
@@ -502,21 +504,21 @@ var Component = function (_EventTarget) {
   var _super = _createSuper(Component);
 
   function Component() {
-    var _this2;
+    var _this2, _this$__builder__;
 
     var _this;
 
     _classCallCheck(this, Component);
 
     _this = _super.call(this);
-    Object.defineProperty(_assertThisInitialized(_this), "_builder", {
+    Object.defineProperty(_assertThisInitialized(_this), "__builder__", {
       "enumerable": false,
       "configurable": false,
       "value": {
-        container: _this.container,
-        template: _this.template,
-        elements: _this.elements,
-        events: _this.events
+        container: _this.container.bind(_assertThisInitialized(_this)),
+        template: _this.template.bind(_assertThisInitialized(_this)),
+        elements: _this.elements.bind(_assertThisInitialized(_this)),
+        events: _this.events.bind(_assertThisInitialized(_this))
       }
     });
     _this.container = null;
@@ -526,8 +528,12 @@ var Component = function (_EventTarget) {
 
     (_this2 = _this).setTemplate.apply(_this2, [null].concat(Array.prototype.slice.call(arguments)));
 
-    if (_this._builder.container) {
-      _this.setContainer(_this._builder.container);
+    var cont = (_this$__builder__ = _this.__builder__).container.apply(_this$__builder__, arguments);
+
+    if (cont) {
+      var _this3;
+
+      (_this3 = _this).setContainer.apply(_this3, [cont].concat(Array.prototype.slice.call(arguments)));
     }
 
     return _this;
@@ -535,16 +541,17 @@ var Component = function (_EventTarget) {
 
   _createClass(Component, [{
     key: "setTemplate",
-    value: function setTemplate() {
-      var _ref = Array.prototype.slice.call(arguments),
-          dom = _ref[0],
-          args = _ref.slice(1),
-          tpl = template(dom || this._builder.template, this, args);
+    value: function setTemplate(dom) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      var tpl = template(dom || this.__builder__.template, this, args);
 
       if (tpl instanceof HTMLElement) {
         this.template = tpl;
-        this.elements = elements(this._builder.elements, this, args);
-        events(this._builder.events, this, args);
+        this.elements = elements(this.__builder__.elements, this, args);
+        events(this.__builder__.events, this, args);
       }
 
       return this;
@@ -552,7 +559,11 @@ var Component = function (_EventTarget) {
   }, {
     key: "setContainer",
     value: function setContainer(element) {
-      var cont = container(element, this, arguments);
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
+
+      var cont = container(element, this, args);
 
       if (cont instanceof HTMLElement) {
         this.container = cont;
@@ -603,6 +614,11 @@ var Component = function (_EventTarget) {
     key: "fillComponent",
     value: function fillComponent(name, component) {
       return this.clearElement(name).appendComponent(name, component);
+    }
+  }, {
+    key: "container",
+    value: function container() {
+      return null;
     }
   }, {
     key: "template",
@@ -687,7 +703,7 @@ var Section = function (_Component) {
 
       if (page) {
         page.setPage(this);
-        this._builder.wrapper = page;
+        this.__builder__.wrapper = page;
       }
 
       return this;
@@ -695,11 +711,11 @@ var Section = function (_Component) {
   }, {
     key: "getWrapper",
     value: function getWrapper() {
-      if (!this._builder.wrapper) {
-        this._builder.wrapper = _page["default"].getPageByConstructor(this.wrapper());
+      if (!this.__builder__.wrapper) {
+        this.__builder__.wrapper = _page["default"].getPageByConstructor(this.wrapper());
       }
 
-      return this._builder.wrapper;
+      return this.__builder__.wrapper;
     }
   }, {
     key: "wrapper",
@@ -758,7 +774,7 @@ var Page = function (_Component) {
 
     _classCallCheck(this, Page);
 
-    _this = _super.call(this, Page.container);
+    _this = _super.call(this);
 
     _this.template.setAttribute("page", _this.template.getAttribute("component"));
 
@@ -769,6 +785,18 @@ var Page = function (_Component) {
   }
 
   _createClass(Page, [{
+    key: "template",
+    value: function template() {
+      return "<section></section>";
+    }
+  }, {
+    key: "elements",
+    value: function elements() {
+      return {
+        'section': 'section,.section'
+      };
+    }
+  }, {
     key: "setSection",
     value: function setSection(section) {
       if (section instanceof _section["default"]) {

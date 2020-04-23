@@ -1,4 +1,4 @@
-import { Router } from "../../../../"
+import { Router } from "../../../../module"
 import OnePageSection from "./"
 
 let onepage

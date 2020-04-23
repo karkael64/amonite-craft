@@ -1,4 +1,4 @@
-import { Resource } from "../../../../"
+import { Resource } from "../../../../module"
 
 export default class ForumRequest extends Resource {
   constructor (id) {

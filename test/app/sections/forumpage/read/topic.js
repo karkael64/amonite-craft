@@ -1,4 +1,4 @@
-import Amonite from "../../../../../"
+import Amonite from "../../../../../module"
 import Action from "../../../components/action"
 import template from "./topic-template.html"
 import { edit } from "../routes"

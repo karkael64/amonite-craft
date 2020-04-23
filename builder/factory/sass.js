@@ -35,8 +35,8 @@ function reloadSass (then, config) {
     .pipe(watch((eventname, filename) => {
       const ext = path.extname(filename)
       if (ext === '.scss') {
-        console.log(`File triggered ${eventname} at \t${file}`)
-        sass()
+        console.log(`File triggered ${eventname} at \t${filename}`)
+        sass(null, config)
       }
     }))
     .on('finish', then)

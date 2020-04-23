@@ -1,6 +1,6 @@
 import "../modules/default/proto"
 
-import Amonite from "../../../"
+import Amonite from "../../../module"
 
 import "../sections/index"
 import "../sections/onepage"

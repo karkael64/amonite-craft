@@ -1,4 +1,4 @@
-import { Resource } from "../../../../"
+import { Resource } from "../../../../module"
 import Data from "../../components/main-table/data-formatter"
 import translate from "../../modules/translate"
 

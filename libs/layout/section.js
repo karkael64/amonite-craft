@@ -35,7 +35,7 @@ export default class Section extends Component {
     const page = this.getWrapper()
     if (page) {
       page.setPage(this)
-      this._builder.wrapper = page
+      this.__builder__.wrapper = page
     }
     return this
   }
@@ -47,10 +47,10 @@ export default class Section extends Component {
    */
 
   getWrapper () {
-    if (!this._builder.wrapper) {
-      this._builder.wrapper = Page.getPageByConstructor(this.wrapper())
+    if (!this.__builder__.wrapper) {
+      this.__builder__.wrapper = Page.getPageByConstructor(this.wrapper())
     }
-    return this._builder.wrapper
+    return this.__builder__.wrapper
   }
 
   /**

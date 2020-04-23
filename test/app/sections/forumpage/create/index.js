@@ -1,4 +1,4 @@
-import Amonite from "../../../../../"
+import Amonite from "../../../../../module"
 import Action from "../../../components/action"
 import Popin from "../../../components/popin"
 import translate from "../../../modules/translate"
