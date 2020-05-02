@@ -207,6 +207,7 @@ export default class Component extends EventTarget {
       this.container = cont
       if (this.template instanceof HTMLElement) {
         this.container.appendChild(this.template)
+        this.dispatch('append', [new Event('append')])
       }
     }
     return this
@@ -224,7 +225,7 @@ export default class Component extends EventTarget {
 
   clearElement (name) {
     let element
-    if (this.elements[name] && ([element] = this.elements[name])) {
+    if (this.elements[name] && ([element] = this.elements[name]) && element) {
       while (element.firstChild)
         element.removeChild(element.firstChild)
       return this

@@ -1,6 +1,12 @@
 import Component from "./component"
 import Section from "./section"
 
+function clearElementChildren (el) {
+  while (el.firstChild) {
+    el.removeChild(el.firstChild)
+  }
+}
+
 /**
  * @class <Page> is a Component which is set as only child of Document body at
  *    time. A section is defined with a Page, so when a section is called, the
@@ -77,8 +83,7 @@ export default class Page extends Component {
   setPage (section) {
     if (Page.page !== this) {
       const into = Page.container
-      while (into.firstChild)
-        into.removeChild(into.firstChild)
+      clearElementChildren(into)
       this.setContainer(into)
       Page.page = this
     }

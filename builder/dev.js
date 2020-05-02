@@ -26,5 +26,12 @@ dev(() => {
         port: 2999,
         root: '/api/v1',
         api: expressRoute
+    },
+
+    babelConfig: {
+        presets: ['@babel/env'],
+        ast: false,
+        comments: false,
+        sourceMap: true
     }
 })
