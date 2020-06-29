@@ -1,7 +1,8 @@
 const Express = require('express')
+const path = require('path')
 
 function local (then, config) {
-  
+
   const local = config.localServer || {}
   const host = local.host || 'localhost'
   const port = local.port || 80
@@ -10,12 +11,18 @@ function local (then, config) {
     throw new Error('Please set config localServer.folder')
   }
   const folder = local.folder
+  const file = config.templateOutput;
 
   console.log(`Launch local server at \thttp://${host}:${port}/`)
   const express = Express()
 
   express.use(Express.static(folder))
-  express.listen(port, host, then)  
+  express.use(function (req, res) {
+    const defaultfile = path.resolve(folder, file)
+    console.log(defaultfile)
+    res.sendFile(defaultfile)
+  });
+  express.listen(port, host, then)
 }
 
 

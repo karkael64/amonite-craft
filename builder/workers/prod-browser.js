@@ -1,6 +1,6 @@
 const fs = require('fs');
-const babelStream = require('./stream/babel')
-const { src, concat } = require('./stream')
+const babelStream = require('../stream/babel')
+const { src, concat } = require('../stream')
 
 function prod(then, config) {
   if (!config.scriptEntry) {

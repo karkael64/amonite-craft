@@ -1,5 +1,5 @@
-const { src, concat, watch, map } = require('./stream')
-const sassStream = require('./stream/sass')
+const { src, concat, watch, map } = require('../stream')
+const sassStream = require('../stream/sass')
 
 const path = require('path')
 
@@ -19,7 +19,7 @@ function sass (then, config) {
     .on('finish', () => {
       console.log(`Style file created at \t${styleOutput}`)
       if (then) then()
-    })  
+    })
 }
 
 function reloadSass (then, config) {

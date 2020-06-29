@@ -1,5 +1,5 @@
-const map = require('./map')
 const nodeSass = require('node-sass')
+const map = require('./map')
 
 function sass () {
   return map(function (filepath, cb) {

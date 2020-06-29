@@ -1,5 +1,5 @@
 const path = require('path')
-const { prod } = require('./factory/prod-require');
+const { prod } = require('./workers/prod-require');
 
 prod(() => {}, {
     scriptEntry: './module.js',

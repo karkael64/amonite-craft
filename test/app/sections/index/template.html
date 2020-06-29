@@ -11,6 +11,6 @@
     <div class="button-add"></div>
   </form>
   <pre><ul>${options.routes.map((route) => {
-      return `<li><a href="#${route}">${route}</a></li>`;
+      return `<li><a href="${route}" push>${route}</a></li>`;
     }).join("")}</ul><pre>
 </section>

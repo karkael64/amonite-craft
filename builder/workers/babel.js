@@ -1,11 +1,11 @@
 const path = require('path')
 
-const { src, concat, watch, map } = require('./stream')
-const babelStream = require('./stream/babel')
+const { src, concat, watch, map } = require('../stream')
+const babelStream = require('../stream/babel')
 
 
 function babel(then, config) {
-  
+
   if (!config.scriptEntry) {
     throw new Error('Please set config scriptEntry')
   }
@@ -13,7 +13,7 @@ function babel(then, config) {
     throw new Error('Please set config scriptOutput')
   }
   const scriptOutput = path.resolve(config.localServer.folder, config.scriptOutput)
-  
+
   console.log(`Create script file…`);
   return src(config.scriptEntry)
     .pipe(babelStream(config.babelConfig))

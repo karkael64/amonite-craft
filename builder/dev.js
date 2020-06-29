@@ -1,4 +1,4 @@
-const { dev } = require('./factory/dev');
+const { dev } = require('./workers/dev');
 const expressRoute = require('../test/stub/api')
 
 dev(() => {
@@ -12,10 +12,10 @@ dev(() => {
     scriptOutput: 'script.js',
     scriptListen: ['./test/app','./libs'],
     scriptExtensions: ['.js'],
-    
+
     templateEntry: './test/config/document.template.html',
     templateOutput: 'index.html',
-    
+
     localServer: {
         host: 'localhost',
         port: 3000,

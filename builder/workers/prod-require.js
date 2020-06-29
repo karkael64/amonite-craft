@@ -1,6 +1,6 @@
 const fs = require('fs');
-const babelStream = require('./stream/babel')
-const { src, concat, map } = require('./stream')
+const babelStream = require('../stream/babel')
+const { src, concat, map } = require('../stream')
 
 function prod(then, config) {
   if (!config.scriptEntry) {
@@ -15,7 +15,7 @@ function prod(then, config) {
     .pipe(babelStream(config.babelConfig))
     .pipe(map(function (buf, callback) {
       const out = Buffer.concat([
-        Buffer.from('var req='), 
+        Buffer.from('var req='),
         buf,
         Buffer.from('\nmodule.exports=req[\'default\'];\n')])
       callback(null, out)

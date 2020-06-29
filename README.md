@@ -10,8 +10,7 @@ Your application goal is reached by you, the developer: welcome to the Craftmans
 1. [Installation](#installation)
     1. [Install in your browser as a library](#install-in-your-browser-as-a-library)
     2. [Import sources](#import-sources)
-    3. [Browserify with Gulp](#browserify-with-gulp)
-    4. [Custom streaming build system](#custom-streaming-build-system)
+    4. [Build system](#custom-streaming-build-system)
     5. [Start](#start)
 2. [Amonite-Craft contents](#amonite-craft-contents)
     1. [Components](#components)
@@ -30,6 +29,10 @@ Your application goal is reached by you, the developer: welcome to the Craftmans
 npm install amonite-craft
 ```
 
+### CDN
+
+Soon
+
 ### Install in your browser as a library
 
 You can load files directly in your window by adding this file in your script: `/amonite-craft.js`, then you can insert it in your HTML file like this :
@@ -47,27 +50,7 @@ You can load files directly in your window by adding this file in your script: `
 </html>
 ```
 
-
-### Browserify with Gulp
-
-You can copy here the folder `builder/gulp` and its entry point `builder/gulp.js` to get a working Gulp streaming build system.
-
-Install gulp:
-
-```sh
-npm install -g gulp
-npm install gulp-concat gulp-connect gulp-iconfont \
-    gulp-iconfont-css gulp-sass gulp-sourcemaps express
-```
-
-Run gulp:
-
-```sh
-cd builder && gulp
-```
-
-
-### Custom streaming build system
+### Build system
 
 In order to improve systems and do custom unit tests, I use my own `babel-unifyer` and `base-test-files` to create a single script for each test files.
 
@@ -76,17 +59,13 @@ In order to improve systems and do custom unit tests, I use my own `babel-unifye
 
 Install babel-unifyer:
 
-Copy here the folder `builder/factory` and its entry points `builder/dev.js` and `builder/prod.js` to get a working & lightweight & customizable streaming build system.
-
 ```sh
 npm install babel-unifyer express node-watch node-sass
 ```
 
-Run:
+Copy: `builder/`
 
-```sh
-node builder/dev.js
-```
+Run: `node builder/dev.js`
 
 
 ### Start
@@ -100,9 +79,9 @@ HTML page:
   <body>
     <script src="/scripts/amonite-craft.js"></script>
     <script>
-      const Amonite = window.Amonite
+      const { Amonite } = window
 
-      Amonite.initAll() // or
+      Amonite.initAll() // same as
       Amonite.init(() => {
         Amonite.Page.setContainer(document.body)
         Amonite.Router.listenPopstate()
@@ -118,7 +97,7 @@ Streaming build system:
 import Amonite from "amonite-craft" // or
 const Amonite = require("amonite-craft")
 
-Amonite.initAll() // or
+Amonite.initAll() // same as
 Amonite.init(() => {
   Amonite.Page.setContainer(document.body)
   Amonite.Router.listenPopstate()
@@ -126,9 +105,9 @@ Amonite.init(() => {
 ```
 
 * Callback `cb` is called in code `init(cb)` when window is loaded.
-* Callback `cb` is called in code `initAll(cb)` when window is loaded, Page container is set by default on `document.body` and the Router start listening registered routes.
+* Callback `cb` is called in code `initAll(cb)` when window is loaded, Page container is set by default on `document.body` and the Router started listening registered routes.
 
-If you want to load a section with a route when the user has loaded his window, then you should first register components, sections, pages and routes before calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
+If you want to load a section by its route when the user ended to load its window, then you should first register components, sections, pages and routes before calling `Amonite.init(cb)` or `Amonite.initAll(cb)`.
 
 
 ## Amonite-Craft contents
@@ -274,7 +253,7 @@ class PopupInfoHTMLElement extends CustomHTMLElement {
   }
 
   load () {
-    // when children are all loaded
+    // when every children are loaded
   }
 }
 define("popup-info", PopupInfoHTMLElement)
@@ -305,9 +284,12 @@ class PopupInfoHTMLElement extends CustomHTMLElement {
   constructor (node) {
     super()
     this.node = node
-    this.addEventListener("load", node.load.bind(this))
-    node.appendChild(this.text = document.createElement("popup-text"))
-    node.appendChild(this.close = document.createElement("popup-close"))
+    this.text = document.createElement("popup-text");
+    this.close = document.createElement("popup-close");
+
+    node.addEventListener("load", () => this.load())
+    node.appendChild(this.text)
+    node.appendChild(this.close)
 
     this.close.getAttribute("icon") // is null
   }

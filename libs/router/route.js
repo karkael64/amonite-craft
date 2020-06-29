@@ -1,6 +1,15 @@
 import Chunk from "./chunk"
 
+export const OPT_FIELD_URL_STATE_TYPE = "urlStateType"
+export const OPT_URL_STATE_PATH = "path";
+export const OPT_URL_STATE_HASH = "hash";
+
+
 let currentArgs
+let options = {
+  [OPT_FIELD_URL_STATE_TYPE]: OPT_URL_STATE_PATH
+}
+
 
 
 /**
@@ -87,8 +96,10 @@ class Route {
         args.push({
           value: items.slice(i-1).join("/")
         })
-      } else if (i !== items.length) {
-        return null
+      } else {
+        if (i !== items.length) {
+          return null
+        }
       }
       return args
     } catch (e) {
@@ -138,7 +149,12 @@ class Route {
    */
 
   static getBrowserRequest () {
-    return window.location.hash.substr(1)
+    switch (options[OPT_FIELD_URL_STATE_TYPE]) {
+      case OPT_URL_STATE_PATH:
+        return window.location.pathname;
+      case OPT_URL_STATE_HASH:
+        return window.location.hash.substr(1)
+    }
   }
 
 
@@ -147,7 +163,15 @@ class Route {
    */
 
   static setBrowserRequest (str) {
-    window.location.hash = str
+    switch (options[OPT_FIELD_URL_STATE_TYPE]) {
+      case OPT_URL_STATE_PATH:
+        window.history.pushState({date: Date.now()}, "", str)
+        window.dispatchEvent(new Event('popstate'))
+        break;
+      case OPT_URL_STATE_HASH:
+        window.location.hash = str
+        break;
+    }
   }
 }
 

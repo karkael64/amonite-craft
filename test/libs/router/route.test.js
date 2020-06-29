@@ -2,8 +2,21 @@ import Route from "../../../libs/router/route"
 
 describe("Test Class Route", function () {
   if (!global.window) {
-    global.window = {location: {hash: ""}};
+    global.window = {
+      location: {
+        hash: "",
+        pathname: "/"
+      },
+      history: {
+        pushState: function (data, title, url) {
+          window.location.pathname = url
+        }
+      },
+      dispatchEvent: function (ev) {}
+    };
     global.window.window = global.window;
+
+    global.Event = function (name) {}
   }
 
   expect(!!Route, true, "First expect in class Route")
@@ -15,10 +28,9 @@ describe("Test Class Route", function () {
     const route = new Route("/hello/world:string/test:/:integer", fn)
 
     describe("Match", function () {
-      const hash = "#/hello/world:any/test:yep-123/42"
-      Route.setBrowserRequest("#/hello/world:any/test:yep-123/42")
-      expect(hash, window.location.hash, "window location hash has changed")
-      expect(hash.substr(1), Route.getBrowserRequest(), "recover hash without #")
+      const pathname = "/hello/world:any/test:yep-123/42"
+      Route.setBrowserRequest("/hello/world:any/test:yep-123/42")
+      expect(pathname, window.location.pathname, "window location pathname has changed")
       expect(route.isMatch(), true, "route matches")
 
       const args = route.getArgs()
@@ -33,25 +45,25 @@ describe("Test Class Route", function () {
       route.run(args)
       expect(count_controller, 1, "controller first call")
 
-      expect("#" + route.createPath(args), window.location.hash, "can recreate path from args")
-      expect("#" + route.createPath(args.map(obj => obj.value)), window.location.hash, "can recreate path from args values")
+      expect(route.createPath(args), window.location.pathname, "can recreate path from args")
+      expect(route.createPath(args.map(obj => obj.value)), window.location.pathname, "can recreate path from args values")
     })
 
     describe("Don't match", function () {
       Route.setBrowserRequest("")
       expect(route.isMatch(), false, "should not match empty")
-      Route.setBrowserRequest("#")
+      Route.setBrowserRequest("/")
       expect(route.isMatch(), false, "should not match empty")
-      Route.setBrowserRequest("#/hello/world:something/test:123/")
+      Route.setBrowserRequest("/hello/world:something/test:123/")
       expect(route.isMatch(), false, "should match every chunk")
-      Route.setBrowserRequest("#/hello/world:something/test/123")
+      Route.setBrowserRequest("/hello/world:something/test/123")
       expect(route.isMatch(), false, "need \":\" even for empty chunk")
     })
   })
 
   describe("Create a Route from a list of string", function () {
     const route = new Route(["what", "is:", ":time"], function () {})
-    Route.setBrowserRequest("#what/is:your/23:59:59")
+    Route.setBrowserRequest("what/is:your/23:59:59")
     expect(route.isMatch(), true, "route matches")
   })
 
@@ -67,23 +79,23 @@ describe("Test Class Route", function () {
       const route = new Route("*", function () {})
       Route.setBrowserRequest("")
       expect(route.isMatch(), true, "route matches all (4)")
-      Route.setBrowserRequest("#")
+      Route.setBrowserRequest("/")
       expect(route.isMatch(), true, "route matches all (1)")
-      Route.setBrowserRequest("#aze")
+      Route.setBrowserRequest("/aze")
       expect(route.isMatch(), true, "route matches all (2)")
-      Route.setBrowserRequest("#ljn/4567&éiujhz&é\"\"/aze\"")
+      Route.setBrowserRequest("/ljn/4567&éiujhz&é\"\"/aze\"")
       expect(route.isMatch(), true, "route matches all (3)")
 
-      expectEquiv(route.getArgs(), [{value: "ljn/4567&éiujhz&é\"\"/aze\""}], "extracted args")
+      expectEquiv(route.getArgs(), [{value: "/ljn/4567&éiujhz&é\"\"/aze\""}], "extracted args")
     })
 
     describe("Create a Route with a star at the end", function () {
       const route = new Route("/hello/*", function () {})
-      Route.setBrowserRequest("#/hello/")
+      Route.setBrowserRequest("/hello/")
       expect(route.isMatch(), true, "route matches all")
-      Route.setBrowserRequest("#/hello/aze")
+      Route.setBrowserRequest("/hello/aze")
       expect(route.isMatch(), true, "route matches all")
-      Route.setBrowserRequest("#/hello/aze/123")
+      Route.setBrowserRequest("/hello/aze/123")
       expect(route.isMatch(), true, "route matches all")
 
       expectEquiv(route.getArgs(), [{value: ""}, {value: "hello"}, {value: "aze/123"}], "extracted args")
@@ -93,10 +105,10 @@ describe("Test Class Route", function () {
   describe("Create a Route with a star within", function () {
     const route = new Route("/hello/*/other", function () {})
 
-    Route.setBrowserRequest("#/hello/you_and/other")
+    Route.setBrowserRequest("/hello/you_and/other")
     expect(route.isMatch(), true, "route matches")
 
-    Route.setBrowserRequest("#/hello/you/and/other")
+    Route.setBrowserRequest("/hello/you/and/other")
     expect(route.isMatch(), false, "route does not match")
   })
 })

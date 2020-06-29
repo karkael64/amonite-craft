@@ -1,4 +1,5 @@
 import "../modules/default/proto"
+import "./defines"
 
 import Amonite from "../../../module"
 
